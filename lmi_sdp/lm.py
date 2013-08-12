@@ -37,7 +37,17 @@ def split_by_diag_blocks(matrix):
 
 def lm_sym_to_coeffs(linear_matrix, variables):
     """Convert a symbolic matrix linear w.r.t. variables into a list of
-    numerical coefficient matrices"""
+    numerical coefficient matrices
+
+    Returns
+    -------
+
+    coeffs: list of numpy matrices
+        List of numpy matrices, each containing the coefficients of each
+        variable in variables.
+    consts: numpy matrix
+        Matrix containing the constant terms (zero order coefficients).
+    """
     LM = linear_matrix
     X = variables
     nx = len(X)
@@ -62,7 +72,7 @@ def lm_sym_to_coeffs(linear_matrix, variables):
         for i, x in enumerate(X):
             coeffs[i][elem] = coeff_dict.get(x, 0)
 
-    return (coeffs, consts)
+    return coeffs, consts
 
 
 def lm_coeffs_to_sym(coeffs, variables):
