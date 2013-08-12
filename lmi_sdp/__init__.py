@@ -3,4 +3,6 @@
 __version__ = '0.1-git'
 
 from .lm import *
+from .lmi import *
+from .sdp import *
 

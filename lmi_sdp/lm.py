@@ -11,16 +11,16 @@ class NonLinearMatrixError(ValueError):
     pass
 
 
-def get_diag_block_idxs(M):
+def get_diag_block_idxs(matrix):
     """Get major indexes of diagonal blocks of squared matrices"""
-    if M.shape[0] != M.shape[1]:
+    if matrix.shape[0] != matrix.shape[1]:
         raise NonSquareMatrixError('matrix must be square')
     b = []
-    n = M.shape[0]
+    n = matrix.shape[0]
     c = 0
     while c < n-1:
         for l in range(n-1, c, -1):
-            if M[l, c] != 0 or M[c, l] != 0:
+            if matrix[l, c] != 0 or matrix[c, l] != 0:
                 break
             elif l == c+1:
                 b.append(l)
