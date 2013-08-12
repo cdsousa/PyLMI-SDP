@@ -1,5 +1,5 @@
 """Tools for symbolic and numerical representations of linear matrices"""
-from sympy import Matrix, S, diag
+from sympy import Matrix, S, diag, Dummy
 import numpy as np
 
 
@@ -41,13 +41,15 @@ def lm_sym_to_coeffs(linear_matrix, variables):
     LM = linear_matrix
     X = variables
     nx = len(X)
+    dummy = Dummy()
 
     one = S(1)
-    ok_set = set(X) | set([one])
+    ok_set = set(X) | set([one, dummy])
     consts = np.zeros((LM.rows, LM.cols))
     coeffs = [np.zeros((LM.rows, LM.cols)) for i in range(nx)]
     for elem in [(i, j) for i in range(LM.rows) for j in range(LM.cols)]:
-        expr = LM[elem]
+        expr = LM[elem] + dummy  # fixes as_coefficients_dict() behavior for
+                                 # single term expressions
         coeff_dict = expr.as_coefficients_dict()
         if not set(coeff_dict.keys()).issubset(ok_set):
             expr = expr.expand()  # try expanding
