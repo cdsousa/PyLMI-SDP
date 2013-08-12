@@ -1,8 +1,9 @@
-from sympy import Matrix, factor
+from sympy import Matrix, factor, zeros
 from sympy.abc import x, y, z
 import numpy as np
 from lmi_sdp import NonSquareMatrixError, NonLinearMatrixError, \
-    get_diag_block_idxs, split_by_diag_blocks, lm_sym_to_coeffs
+    get_diag_block_idxs, split_by_diag_blocks, lm_sym_to_coeffs, \
+    lm_coeffs_to_sym
 
 
 def test_get_diag_block_idxs():
@@ -13,7 +14,8 @@ def test_get_diag_block_idxs():
     assert get_diag_block_idxs(m) == [1, 3]
 
     m = Matrix([[0, 1, 0], [0, 0, 0], [0, 0, 0]])
-    assert (get_diag_block_idxs(m), get_diag_block_idxs(m.T)) == ([2, 3], [2, 3])
+    assert (get_diag_block_idxs(m), get_diag_block_idxs(m.T)) == \
+        ([2, 3], [2, 3])
 
 
 def test_get_diag_block_idxs_exceptions():
@@ -68,3 +70,14 @@ def test_lm_sym_to_coeffs_exceptions():
     except NonLinearMatrixError:
         except_ok = True
     assert except_ok
+
+
+def test_lm_coeffs_to_sym():
+    var_coeffs = [None]*3
+    var_coeffs[0] = np.matrix([[0.0, 1.0], [0.0, 3.0]])
+    var_coeffs[1] = np.matrix([[0.0, 0.0], [3.4, -4.5]])
+    var_coeffs[2] = np.matrix([[0.0, 0.0], [0.0, 1.0]])
+    consts = np.matrix([[1.2, 0.0], [0.0, 1.2]])
+    coeffs = (var_coeffs, consts)
+    m = Matrix([[1.2, x], [3.4*y, 1.2 + 3*x - 4.5*y + z]])
+    assert lm_coeffs_to_sym(coeffs, [x, y, z]) - m == zeros(2)
