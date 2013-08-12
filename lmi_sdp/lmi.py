@@ -15,15 +15,18 @@ class LMI_PSD(GreaterThan):
     >>> from sympy.abc import x, y, z
     >>> from lmi_sdp import LMI_PSD
     >>> m = Matrix([[x, y], [y, z+1]])
-    >>> print(LMI_PSD(m))
-    [x,     y]
-    [y, z + 1] >= 0
+    >>> LMI_PSD(m)
+    Matrix([
+    [x,     y],
+    [y, z + 1]]) >= 0
     >>> m = Matrix([[x+y, y], [y, z]])
     >>> c = Matrix([[1, 2], [2, 3]])
-    >>> print(LMI_PSD(m, c))
-    [x + y, y]
-    [    y, z] >= [1, 2]
-    [2, 3]
+    >>> LMI_PSD(m, c)
+    Matrix([
+    [x + y, y],
+    [    y, z]]) >= Matrix([
+    [1, 2],
+    [2, 3]])
     """
     def __new__(cls, lhs, rhs=0):
         lhs = sympify(lhs)
