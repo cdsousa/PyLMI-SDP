@@ -5,8 +5,8 @@ python:
   - "3.2"
   - "3.3"
 before_install:
-  - pip install sympy
-  - pip install numpy
+  - pip install sympy --use-mirrors
+  - pip install numpy --use-mirrors
 install:
   - python setup.py install
 script:
