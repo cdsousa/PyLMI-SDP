@@ -28,9 +28,27 @@ class _LMI(object):
                     raise ShapeError('LMI matrices have different shapes')
         elif not ((lhs.is_Matrix and rhs.is_zero)
                   or (lhs.is_zero and rhs.is_Matrix)):
-            raise ValueError('LMI sides must two matrices or a matrix and a zero')
+            raise ValueError('LMI sides must be two matrices '
+                             'or a matrix and a zero')
 
         return rel_cls.__new__(cls, lhs, rhs)
+
+    def canonical(self):
+        """Returns the LMI positive (semi-)definite form with the matrix at
+        the rhs and zero at the lhs.
+        """
+        if self.gts.is_Matrix:
+            if self.lts.is_Matrix:
+                diff = self.gts - self.lts
+            else:
+                diff = self.gts
+        else:
+            diff = -self.lts
+
+        if self.is_strict:
+            return LMI_PD(diff, 0)
+        else:
+            return LMI_PSD(diff, 0)
 
     def doit(self, **hints):
         if hints.get('deep', False):
@@ -65,6 +83,8 @@ class LMI_PSD(_LMI, GreaterThan):
     [1, 2],
     [2, 3]])
     """
+    is_strict = False
+
     def __new__(cls, lhs, rhs=0):
         return _LMI.__new__(cls, lhs, rhs, GreaterThan)
 
@@ -75,6 +95,8 @@ class LMI_PD(_LMI, StrictGreaterThan):
     Represents a stric LMI where left-hand side minus
     right-hand side (if any) is Positive Definite.
     """
+    is_strict = True
+
     def __new__(cls, lhs, rhs=0):
         return _LMI.__new__(cls, lhs, rhs, StrictGreaterThan)
 
@@ -85,6 +107,8 @@ class LMI_NSD(_LMI, LessThan):
     Represents a non-stric LMI where left-hand side minus
     right-hand side (if any) is Negative Semi-Definite.
     """
+    is_strict = False
+
     def __new__(cls, lhs, rhs=0):
         return _LMI.__new__(cls, lhs, rhs, LessThan)
 
@@ -95,6 +119,8 @@ class LMI_ND(_LMI, StrictLessThan):
     Represents a stric LMI where left-hand side minus
     right-hand side (if any) is Negative Definite.
     """
+    is_strict = True
+
     def __new__(cls, lhs, rhs=0):
         return _LMI.__new__(cls, lhs, rhs, StrictLessThan)
 
