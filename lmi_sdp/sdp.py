@@ -2,40 +2,41 @@
 
 from sympy import Basic, Matrix, Dummy, S
 from .lm import split_by_diag_blocks, lm_sym_to_coeffs
+from .lmi import _LMI
 
 
-def prepare_lmi_for_sdp(LMI, variables, optimize_by_diag_blocks=False):
+def prepare_lmi_for_sdp(lmi, variables, optimize_by_diag_blocks=False):
 
-    if isinstance(LMI, Basic) or isinstance(LMI, Matrix):
-        LMIs = [LMI]
+    if isinstance(lmi, _LMI) or isinstance(lmi, Matrix):
+        lmis = [lmi]
     else:
-        LMIs = list(LMI)
+        lmis = list(lmi)
 
-    SLMs = []  # SLM stands for 'Symmetric Linear Matrix'
-    for LMI in LMIs:
-        if isinstance(LMI, Matrix):
-            LM = LMI
+    slms = []  # SLM stands for 'Symmetric Linear Matrix'
+    for lmi in lmis:
+        if isinstance(lmi, Matrix):
+            if not lmi.is_symmetric():
+                raise ValueError('LMI matrix not symmetric')
+            lm = lmi
         else:
-            if isinstance(LMI, Basic) and LMI.is_Relational:
-                if LMI.lts == 0:
-                    LM = LMI.gts
-                elif LMI.gts == 0:
-                    LM = -LMI.lts
+            if isinstance(lmi, _LMI):
+                if lmi.lts == 0:
+                    lm = lmi.gts
+                elif lmi.gts == 0:
+                    lm = -lmi.lts
                 else:
-                    LM = LMI.gts - LMI.lts
+                    lm = lmi.gts - lmi.lts
             else:
                 raise ValueError('Unknoun LMI data type')
-        if not LM.is_symmetric():
-            raise ValueError('LMI matrix not symmetric')
-        SLMs.append(LM)
+        slms.append(lm)
 
     if optimize_by_diag_blocks:
-        orig_SLMs = SLMs
-        SLMs = []
-        for SLM in orig_SLMs:
-            SLMs += split_by_diag_blocks(SLM)
+        orig_slms = slms
+        slms = []
+        for slm in orig_slms:
+            slms += split_by_diag_blocks(slm)
 
-    coeffs = [lm_sym_to_coeffs(SLM, variables) for SLM in SLMs]
+    coeffs = [lm_sym_to_coeffs(slm, variables) for slm in slms]
 
     return coeffs
 

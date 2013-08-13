@@ -1,13 +1,10 @@
 """Tools for symbolic and numerical representations of linear matrices"""
-from sympy import Matrix, S, diag, Dummy
+from sympy import ImmutableMatrix, S, diag, Dummy
+from sympy.matrices.matrices import MatrixError, NonSquareMatrixError
 import numpy as np
 
 
-class NonSquareMatrixError(ValueError):
-    pass
-
-
-class NonLinearMatrixError(ValueError):
+class NonLinearMatrixError(ValueError, MatrixError):
     pass
 
 
@@ -48,17 +45,14 @@ def lm_sym_to_coeffs(linear_matrix, variables):
     consts: numpy matrix
         Matrix containing the constant terms (zero order coefficients).
     """
-    LM = linear_matrix
-    X = variables
-    nx = len(X)
+    lm = linear_matrix
     dummy = Dummy()
 
-    one = S(1)
-    ok_set = set(X) | set([one, dummy])
-    consts = np.zeros((LM.rows, LM.cols))
-    coeffs = [np.zeros((LM.rows, LM.cols)) for i in range(nx)]
-    for elem in [(i, j) for i in range(LM.rows) for j in range(LM.cols)]:
-        expr = LM[elem] + dummy  # fixes as_coefficients_dict() behavior for
+    ok_set = set(variables) | set([S.One, dummy])
+    consts = np.zeros((lm.rows, lm.cols))
+    coeffs = [np.zeros((lm.rows, lm.cols)) for i in range(len(variables))]
+    for elem in [(i, j) for i in range(lm.rows) for j in range(lm.cols)]:
+        expr = lm[elem] + dummy  # fixes as_coefficients_dict() behavior for
                                  # single term expressions
         coeff_dict = expr.as_coefficients_dict()
         if not set(coeff_dict.keys()).issubset(ok_set):
@@ -68,8 +62,8 @@ def lm_sym_to_coeffs(linear_matrix, variables):
                 raise NonLinearMatrixError(
                     "'linear_matrix' must be composed of linear "
                     "expressions w.r.t. 'variables'")
-        consts[elem] = coeff_dict.get(one, 0)
-        for i, x in enumerate(X):
+        consts[elem] = coeff_dict.get(S.One, 0)
+        for i, x in enumerate(variables):
             coeffs[i][elem] = coeff_dict.get(x, 0)
 
     return coeffs, consts
@@ -78,11 +72,8 @@ def lm_sym_to_coeffs(linear_matrix, variables):
 def lm_coeffs_to_sym(coeffs, variables):
     """Create a symbolic matrix linear w.r.t. variables given a list of
     numerical coefficient matrices"""
-    X = variables
-    nx = len(X)
+    lm = ImmutableMatrix(coeffs[1])
+    for i, x in enumerate(variables):
+        lm += x*ImmutableMatrix(coeffs[0][i])
 
-    LM = Matrix(coeffs[1])
-    for i, x in enumerate(X):
-        LM += x*Matrix(coeffs[0][i])
-
-    return LM
+    return lm
