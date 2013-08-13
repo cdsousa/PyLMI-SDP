@@ -11,10 +11,10 @@ class NonSymmetricMatrixError(ValueError, MatrixError):
     pass
 
 
-class _LMI(object):
+class BaseLMI(object):
     """Not intended for general use
 
-    _LMI is only used so that LMI_* classes can share functions.
+    BaseLMI is used so that LMI_* classes can share functions.
     """
     def __new__(cls, lhs, rhs, rel_cls):
         lhs = sympify(lhs)
@@ -59,7 +59,7 @@ class _LMI(object):
             return self
 
 
-class LMI_PSD(_LMI, GreaterThan):
+class LMI_PSD(BaseLMI, GreaterThan):
     """Class representation of Linear Matrix Inequality.
 
     Represents a non-stric LMI where left-hand side minus
@@ -86,10 +86,10 @@ class LMI_PSD(_LMI, GreaterThan):
     is_strict = False
 
     def __new__(cls, lhs, rhs=0):
-        return _LMI.__new__(cls, lhs, rhs, GreaterThan)
+        return BaseLMI.__new__(cls, lhs, rhs, GreaterThan)
 
 
-class LMI_PD(_LMI, StrictGreaterThan):
+class LMI_PD(BaseLMI, StrictGreaterThan):
     """Class representation of Linear Matrix Inequality.
 
     Represents a stric LMI where left-hand side minus
@@ -98,10 +98,10 @@ class LMI_PD(_LMI, StrictGreaterThan):
     is_strict = True
 
     def __new__(cls, lhs, rhs=0):
-        return _LMI.__new__(cls, lhs, rhs, StrictGreaterThan)
+        return BaseLMI.__new__(cls, lhs, rhs, StrictGreaterThan)
 
 
-class LMI_NSD(_LMI, LessThan):
+class LMI_NSD(BaseLMI, LessThan):
     """Class representation of Linear Matrix Inequality.
 
     Represents a non-stric LMI where left-hand side minus
@@ -110,10 +110,10 @@ class LMI_NSD(_LMI, LessThan):
     is_strict = False
 
     def __new__(cls, lhs, rhs=0):
-        return _LMI.__new__(cls, lhs, rhs, LessThan)
+        return BaseLMI.__new__(cls, lhs, rhs, LessThan)
 
 
-class LMI_ND(_LMI, StrictLessThan):
+class LMI_ND(BaseLMI, StrictLessThan):
     """Class representation of Linear Matrix Inequality.
 
     Represents a stric LMI where left-hand side minus
@@ -122,6 +122,6 @@ class LMI_ND(_LMI, StrictLessThan):
     is_strict = True
 
     def __new__(cls, lhs, rhs=0):
-        return _LMI.__new__(cls, lhs, rhs, StrictLessThan)
+        return BaseLMI.__new__(cls, lhs, rhs, StrictLessThan)
 
 LMI = LMI_PSD  # default LMI type

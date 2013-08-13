@@ -46,6 +46,8 @@ def test_split_by_diag_blocks():
 def test_lm_sym_to_coeffs():
     m = Matrix([[1.2, x], [3.4*y, 1.2 + 3*x - 4.5*y + z]])
     coeffs = lm_sym_to_coeffs(m, [x, y, z])
+    assert len(coeffs) == 2
+    assert len(coeffs[0]) == 3
     assert (coeffs[0][0] == np.matrix([[0.0, 1.0], [0.0, 3.0]])).all()
     assert (coeffs[0][1] == np.matrix([[0.0, 0.0], [3.4, -4.5]])).all()
     assert (coeffs[0][2] == np.matrix([[0.0, 0.0], [0.0, 1.0]])).all()
