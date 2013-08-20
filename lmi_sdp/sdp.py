@@ -2,7 +2,7 @@
 
 from sympy import Basic, Matrix, Dummy, S
 from numpy import array
-from .lm import split_by_diag_blocks, lm_sym_to_coeffs
+from .lm import lin_expr_coeffs, split_by_diag_blocks, lm_sym_to_coeffs
 from .lmi import BaseLMI, LMI
 
 
@@ -78,7 +78,7 @@ def prepare_objective_for_sdp(objective_func, variables,
 
     Returns
     -------
-    coeffs: list of numerical coefficients
+    coeffs: numpy array
         List of coefficients which multiply by the variables of them
         *minimization* function. If the input is a maximization function
         then the output coefficients will be symmetric to the expression
@@ -103,16 +103,6 @@ def prepare_objective_for_sdp(objective_func, variables,
     else:
         raise ValueError("objective_type must be 'maximize' or 'minimize'")
 
-    dummy = Dummy()
-    objective_func += dummy  # fixes as_coefficients_dict() behavior for
-                             # single term expressions
+    coeffs, const = lin_expr_coeffs(objective_func, variables)
 
-    coeff_dict = objective_func.as_coefficients_dict()
-
-    ok_set = set(variables) | set([S(1), dummy])
-    if not set(coeff_dict.keys()).issubset(ok_set):
-        raise ValueError("objective_func must be linear w.r.t. variables")
-
-    coeffs = array([float(coeff_dict.get(x, 0)) for x in variables])
-
-    return coeffs
+    return array(coeffs).astype(float)

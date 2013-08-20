@@ -1,9 +1,33 @@
 from sympy import Matrix, factor, zeros
 from sympy.abc import x, y, z
 import numpy as np
-from lmi_sdp import NonSquareMatrixError, NonLinearMatrixError, \
-    get_diag_block_idxs, split_by_diag_blocks, lm_sym_to_coeffs, \
+from lmi_sdp import NonLinearExpressionError, NonSquareMatrixError, NonLinearMatrixError, \
+    lin_expr_coeffs, get_diag_block_idxs, split_by_diag_blocks, lm_sym_to_coeffs, \
     lm_coeffs_to_sym
+
+
+def test_lin_expr_coeffs():
+    e = 1.2 + 3*x - 4.5*y + z
+    coeffs, const = lin_expr_coeffs(e, [x, y, z])
+    print coeffs, const
+    assert coeffs == [3.0, -4.5, 1.0]
+    assert const == 1.2
+
+
+def test_lin_expr_coeffs_exceptions():
+    except_ok = False
+    try:
+        lin_expr_coeffs(1.2 + x + y*z, [x, y, z])
+    except NonLinearExpressionError:
+        except_ok = True
+    assert except_ok
+
+    except_ok = False
+    try:
+        lin_expr_coeffs(1.2 + x*y, [x])
+    except NonLinearExpressionError:
+        except_ok = True
+    assert except_ok
 
 
 def test_get_diag_block_idxs():
