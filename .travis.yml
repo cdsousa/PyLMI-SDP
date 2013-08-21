@@ -1,12 +1,11 @@
 language: python
 python:
-  - "2.6"
   - "2.7"
-  - "3.2"
   - "3.3"
 before_install:
-  - pip install sympy --use-mirrors
+  - pip install sympy==0.7.3 --use-mirrors
   - pip install numpy --use-mirrors
+  - pip install cvxopt --use-mirrors
 install:
   - python setup.py install
 script:
