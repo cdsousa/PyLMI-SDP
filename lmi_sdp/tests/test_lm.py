@@ -9,7 +9,6 @@ from lmi_sdp import NonLinearExpressionError, NonSquareMatrixError, NonLinearMat
 def test_lin_expr_coeffs():
     e = 1.2 + 3*x - 4.5*y + z
     coeffs, const = lin_expr_coeffs(e, [x, y, z])
-    print coeffs, const
     assert coeffs == [3.0, -4.5, 1.0]
     assert const == 1.2
 

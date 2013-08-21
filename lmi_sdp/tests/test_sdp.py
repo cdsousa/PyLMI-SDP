@@ -41,7 +41,7 @@ def test_prepare_lmi_for_sdp():
 def test_prepare_objective_for_sdp():
     vars = [x, y, z]
     assert_array_equal(prepare_objective_for_sdp(1.2 + x - 3.4*y, vars, 'max'),
-        array([-1.0, 3.4, 0.0]))
+                       array([-1.0, 3.4, 0.0]))
 
     except_ok = False
     try:
@@ -49,3 +49,50 @@ def test_prepare_objective_for_sdp():
     except ValueError:
         except_ok = True
     assert except_ok
+
+
+try:
+    import cvxopt
+except ImportError:
+    pass
+else:
+
+    from sympy import Matrix, symbols
+    from cvxopt import matrix
+    from lmi_sdp import LMI_NSD, to_cvxopt
+
+    def test_to_cvxopt():
+        variables = symbols('x1 x2 x3')
+        x1, x2, x3 = variables
+
+        min_obj = x1 - x2 + x3
+
+        LMI_1 = LMI_NSD(
+            x1*Matrix([[-7, -11], [-11, 3]]) +
+            x2*Matrix([[7, -18], [-18, 8]]) +
+            x3*Matrix([[-2, -8], [-8, 1]]),
+            Matrix([[33, -9], [-9, 26]]))
+
+        LMI_2 = LMI_NSD(
+            x1*Matrix([[-21, -11, 0], [-11, 10, 8], [0, 8, 5]]) +
+            x2*Matrix([[0, 10, 16], [10, -10, -10], [16, -10, 3]]) +
+            x3*Matrix([[-5, 2, -17], [2, -6, 8], [-17, 8, 6]]),
+            Matrix([[14, 9, 40], [9, 91, 10], [40, 10, 15]]))
+
+        ok_c = matrix([1., -1., 1.])
+        ok_Gs = [matrix([[-7., -11., -11., 3.],
+                        [7., -18., -18., 8.],
+                        [-2., -8., -8., 1.]])]
+        ok_Gs += [matrix([[-21., -11., 0., -11., 10., 8., 0., 8., 5.],
+                          [0., 10., 16., 10., -10., -10., 16., -10., 3.],
+                          [-5., 2., -17., 2., -6., 8., -17., 8., 6.]])]
+        ok_hs = [matrix([[33., -9.], [-9., 26.]])]
+        ok_hs += [matrix([[14., 9., 40.], [9., 91., 10.], [40., 10., 15.]])]
+
+        c, Gs, hs = to_cvxopt(min_obj, [LMI_1, LMI_2], variables)
+
+        assert not any(ok_c - c)
+        for i in range(len(Gs)):
+            assert not any(ok_Gs[i] - Gs[i])
+        for i in range(len(hs)):
+            assert not any(ok_hs[i] - hs[i])

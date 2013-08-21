@@ -35,8 +35,8 @@ def lin_expr_coeffs(linear_expr, variables):
         if not set(coeff_dict.keys()).issubset(ok_set):
                 raise NonLinearExpressionError(
                     "'linear_expr' must be linear w.r.t. 'variables'")
-    const = coeff_dict.get(S.One, 0)
-    coeffs = [coeff_dict.get(x, 0) for x in variables]
+    const = float(coeff_dict.get(S.One, 0))
+    coeffs = [float(coeff_dict.get(x, 0)) for x in variables]
     return coeffs, const
 
 

@@ -1,5 +1,20 @@
 """Interfaces to SDP solvers"""
 
+
+class NotAvailableError(Exception):
+    def __init__(self, function_name):
+        msg = 'Function %s not available since cvxopt package '\
+              'was not found' % function_name
+        Exception.__init__(self, msg)
+
+try:
+    import cvxopt
+except ImportError:
+    cvxopt = None
+else:
+    from cvxopt import matrix
+
+
 from sympy import Basic, Matrix, Dummy, S
 from numpy import array
 from .lm import lin_expr_coeffs, split_by_diag_blocks, lm_sym_to_coeffs
@@ -78,7 +93,7 @@ def prepare_objective_for_sdp(objective_func, variables,
 
     Returns
     -------
-    coeffs: numpy array
+    coeffs: list
         List of coefficients which multiply by the variables of them
         *minimization* function. If the input is a maximization function
         then the output coefficients will be symmetric to the expression
@@ -89,11 +104,11 @@ def prepare_objective_for_sdp(objective_func, variables,
     >>> from sympy.abc import x, y, z
     >>> from lmi_sdp import prepare_objective_for_sdp
     >>> vars = [x, y, z]
-    >>> expr = 1.1 + x + 2*y
+    >>> expr = 1.1 + x + 2.2*y
     >>> prepare_objective_for_sdp(expr, vars)
-    array([ 1.,  2.,  0.])
+    [1.0, 2.2, 0.0]
     >>> prepare_objective_for_sdp(expr, vars, 'maximize')
-    array([-1., -2.,  0.])
+    [-1.0, -2.2, 0.0]
     """
     objective_type = objective_type.lower()
     if objective_type in ['max', 'maximize']:
@@ -105,4 +120,43 @@ def prepare_objective_for_sdp(objective_func, variables,
 
     coeffs, const = lin_expr_coeffs(objective_func, variables)
 
-    return array(coeffs).astype(float)
+    return coeffs
+
+
+def to_cvxopt(objective_func, lmi, variables, objective_type='minimize',
+              optimize_by_diag_blocks=False):
+    """Prepare objective and LMI to be used with cvxopt SDP solver.
+
+    Parameters
+    ----------
+    objective_func: symbolic linear expression
+    lmi: symbolic LMI or Matrix, or a list of them
+    variables: list of symbols
+    objective_type: 'maximize' or 'minimize', defaults to 'minimize'
+    optimize_by_diag_blocks: bool
+        If set to True, function tries to subdivide each LMI into
+        smaller diagonal blocks
+
+    Returns
+    -------
+    c, Gs, hs: parameters ready to be input to cvxopt.solvers.sdp()
+    """
+    if cvxopt is None:
+        raise NotAvailableError(to_cvxopt.__name__)
+
+    obj_coeffs = prepare_objective_for_sdp(objective_func, variables,
+                                           objective_type)
+    lmi_coeffs = prepare_lmi_for_sdp(lmi, variables,
+                                     optimize_by_diag_blocks)
+
+    c = matrix(obj_coeffs)
+
+    Gs = []
+    hs = []
+
+    for (LMis, LM0) in lmi_coeffs:
+        Gs.append(matrix([(-LMi).flatten().astype(float).tolist()
+                          for LMi in LMis]))
+        hs.append(matrix(LM0.astype(float).tolist()))
+
+    return c, Gs, hs
