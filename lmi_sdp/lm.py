@@ -26,7 +26,7 @@ def lin_expr_coeffs(linear_expr, variables):
     """
     dummy = Dummy()
     ok_set = set(variables) | set([S.One, dummy])
-    expr = linear_expr + dummy  # fixes as_coefficients_dict() behavior for
+    expr = dummy + linear_expr  # fixes as_coefficients_dict() behavior for
                                 # single term expressions
     coeff_dict = expr.as_coefficients_dict()
     if not set(coeff_dict.keys()).issubset(ok_set):

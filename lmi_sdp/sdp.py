@@ -1,6 +1,12 @@
 """Interfaces to SDP solvers"""
 
 
+from sympy import Basic, Matrix, Dummy, S, ordered, sympify
+from numpy import array
+from .lm import lin_expr_coeffs, split_by_diag_blocks, lm_sym_to_coeffs
+from .lmi import BaseLMI, LMI
+
+
 class NotAvailableError(Exception):
     def __init__(self, function_name):
         msg = 'Function %s not available since cvxopt package '\
@@ -13,12 +19,6 @@ except ImportError:
     cvxopt = None
 else:
     from cvxopt import matrix
-
-
-from sympy import Basic, Matrix, Dummy, S
-from numpy import array
-from .lm import lin_expr_coeffs, split_by_diag_blocks, lm_sym_to_coeffs
-from .lmi import BaseLMI, LMI
 
 
 def prepare_lmi_for_sdp(lmi, variables, optimize_by_diag_blocks=False):
@@ -123,7 +123,21 @@ def prepare_objective_for_sdp(objective_func, variables,
     return coeffs
 
 
-def to_cvxopt(objective_func, lmi, variables, objective_type='minimize',
+def get_variables(objective_func=0, lmis=[]):
+    """Extract free variables from objective_func and lmis.
+    """
+    variables = sympify(objective_func).free_symbols
+    for lmi in lmis:
+        if isinstance(lmi, Matrix):
+            lm = lmi
+        else:
+            lm = lmi.canonical().gts
+        for expr in lm:
+            variables |= expr.free_symbols
+    return list(ordered(variables))
+
+
+def to_cvxopt(objective_func, lmis, variables, objective_type='minimize',
               optimize_by_diag_blocks=False):
     """Prepare objective and LMI to be used with cvxopt SDP solver.
 
@@ -132,6 +146,7 @@ def to_cvxopt(objective_func, lmi, variables, objective_type='minimize',
     objective_func: symbolic linear expression
     lmi: symbolic LMI or Matrix, or a list of them
     variables: list of symbols
+        The variable symbols which form the LMI/SDP space.
     objective_type: 'maximize' or 'minimize', defaults to 'minimize'
     optimize_by_diag_blocks: bool
         If set to True, function tries to subdivide each LMI into
@@ -146,7 +161,7 @@ def to_cvxopt(objective_func, lmi, variables, objective_type='minimize',
 
     obj_coeffs = prepare_objective_for_sdp(objective_func, variables,
                                            objective_type)
-    lmi_coeffs = prepare_lmi_for_sdp(lmi, variables,
+    lmi_coeffs = prepare_lmi_for_sdp(lmis, variables,
                                      optimize_by_diag_blocks)
 
     c = matrix(obj_coeffs)

@@ -1,10 +1,10 @@
-from sympy import Matrix
+from sympy import Matrix, symbols, pi
 from sympy.abc import x, y, z
 from numpy import array
 from numpy.testing import assert_array_equal
 
-from lmi_sdp import LMI_PSD, LMI_NSD
-from lmi_sdp import prepare_lmi_for_sdp, prepare_objective_for_sdp
+from lmi_sdp import LMI_PSD, LMI_NSD, prepare_lmi_for_sdp, \
+    prepare_objective_for_sdp, get_variables, to_cvxopt
 
 
 def test_prepare_lmi_for_sdp():
@@ -51,15 +51,23 @@ def test_prepare_objective_for_sdp():
     assert except_ok
 
 
+def test_get_variables():
+    x1, x2, x3 = symbols('x1 x2 x3')
+    variables = [x1, x2, x3]
+
+    obj = 1.2 + pi*x3
+    lmis = [Matrix([x2]), LMI_PSD(Matrix([1.4*x2 + x1]))]
+
+    assert variables == get_variables(obj, lmis)
+
+
 try:
     import cvxopt
 except ImportError:
     pass
 else:
 
-    from sympy import Matrix, symbols
     from cvxopt import matrix
-    from lmi_sdp import LMI_NSD, to_cvxopt
 
     def test_to_cvxopt():
         variables = symbols('x1 x2 x3')
@@ -92,7 +100,7 @@ else:
         c, Gs, hs = to_cvxopt(min_obj, [LMI_1, LMI_2], variables)
 
         assert not any(ok_c - c)
-        for i in range(len(Gs)):
+        for i in range(len(ok_Gs)):
             assert not any(ok_Gs[i] - Gs[i])
-        for i in range(len(hs)):
+        for i in range(len(ok_hs)):
             assert not any(ok_hs[i] - hs[i])
