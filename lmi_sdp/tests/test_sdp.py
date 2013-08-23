@@ -4,7 +4,8 @@ from numpy import array
 from numpy.testing import assert_array_equal
 
 from lmi_sdp import LMI_PSD, LMI_NSD, prepare_lmi_for_sdp, \
-    prepare_objective_for_sdp, get_variables, to_cvxopt
+    prepare_objective_for_sdp, get_variables, to_cvxopt, to_sdpa_sparse, \
+    to_sdpa_dense
 
 
 def test_prepare_lmi_for_sdp():
@@ -16,7 +17,7 @@ def test_prepare_lmi_for_sdp():
     c2 = Matrix([[30, 0], [0, 40]])
     lmi2 = LMI_NSD(m2, c2)
     coeffs = prepare_lmi_for_sdp([lmi1, lmi2], vars,
-                                 optimize_by_diag_blocks=True)
+                                 split_blocks=True)
     expected = [([array([[1., 0.],
                          [0., 0.]]),
                   array([[0., 1.],
@@ -60,6 +61,91 @@ def test_get_variables():
 
     assert variables == get_variables(obj, lmis)
 
+
+def test_to_sdpa_sparse():
+    x1, x2 = symbols('x1 x2')
+    variables = x1, x2
+    min_obj = 10*x1 + 20*x2
+    lmi_1 = LMI_PSD(
+        -Matrix([[1, 0, 0, 0], [0, 2, 0, 0], [0, 0, 3, 0], [0, 0, 0, 4]]) +
+        Matrix([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]])*x1 +
+        Matrix([[0, 0, 0, 0], [0, 1, 0, 0], [0, 0, 5, 2], [0, 0, 2, 6]])*x2)
+
+    dat = to_sdpa_sparse(min_obj, lmi_1, variables, comment='test sparse')
+
+    ok_dat = ('"test sparse"\n'
+              '2 = ndim\n'
+              '3 = nblocks\n'
+              '1 1 2 = blockstruct\n'
+              '10.0, 20.0 = objcoeffs\n'
+              '0 1 1 1 1.0\n'
+              '0 2 1 1 2.0\n'
+              '0 3 1 1 3.0\n'
+              '0 3 2 2 4.0\n'
+              '1 1 1 1 1.0\n'
+              '1 2 1 1 1.0\n'
+              '2 2 1 1 1.0\n'
+              '2 3 1 1 5.0\n'
+              '2 3 1 2 2.0\n'
+              '2 3 2 2 6.0\n')
+
+    assert ok_dat == dat
+
+
+def test_to_sdpa_dense():
+    x1, x2 = symbols('x1 x2')
+    variables = x1, x2
+    min_obj = 10*x1 + 20*x2
+    lmi_1 = LMI_PSD(
+        -Matrix([[1, 0, 0, 0], [0, 2, 0, 0], [0, 0, 3, 0], [0, 0, 0, 4]]) +
+        Matrix([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]])*x1 +
+        Matrix([[0, 0, 0, 0], [0, 1, 0, 0], [0, 0, 5, 2], [0, 0, 2, 6]])*x2)
+
+    dat = to_sdpa_dense(min_obj, lmi_1, variables, comment='test dense')
+
+    ok_dat = ('"test dense"\n'
+              '2 = ndim\n'
+              '3 = nblocks\n'
+              '1 1 2 = blockstruct\n'
+              '10.0, 20.0 = objcoeffs\n'
+              '{\n'
+              ' {\n'
+              '  { 1.0 }\n'
+              ' }\n'
+              ' {\n'
+              '  { 2.0 }\n'
+              ' }\n'
+              ' {\n'
+              '  { 3.0, -0 },\n'
+              '  { -0, 4.0 }\n'
+              ' }\n'
+              '}\n'
+              '{\n'
+              ' {\n'
+              '  { 1.0 }\n'
+              ' }\n'
+              ' {\n'
+              '  { 1.0 }\n'
+              ' }\n'
+              ' {\n'
+              '  { 0.0, 0.0 },\n'
+              '  { 0.0, 0.0 }\n'
+              ' }\n'
+              '}\n'
+              '{\n'
+              ' {\n'
+              '  { 0.0 }\n'
+              ' }\n'
+              ' {\n'
+              '  { 1.0 }\n'
+              ' }\n'
+              ' {\n'
+              '  { 5.0, 2.0 },\n'
+              '  { 2.0, 6.0 }\n'
+              ' }\n'
+              '}\n')
+
+    assert ok_dat == dat
 
 try:
     import cvxopt

@@ -21,14 +21,14 @@ else:
     from cvxopt import matrix
 
 
-def prepare_lmi_for_sdp(lmi, variables, optimize_by_diag_blocks=False):
+def prepare_lmi_for_sdp(lmi, variables, split_blocks=False):
     """Transforms LMIs from symbolic to numerical.
 
     Parameters
     ----------
     lmi: symbolic LMI or Matrix, or a list of them
     variables: list of symbols
-    optimize_by_diag_blocks: bool
+    split_blocks: bool
         If set to True, function tries to subdivide each LMI into
         smaller diagonal blocks
 
@@ -57,19 +57,19 @@ def prepare_lmi_for_sdp(lmi, variables, optimize_by_diag_blocks=False):
            [ 0.,  1.]])], array([[ 3., -2.],
            [-2.,  0.]]))]
     """
-    if isinstance(lmi, BaseLMI) or isinstance(lmi, Matrix):
+    if isinstance(lmi, Basic):
         lmis = [lmi]
     else:
         lmis = list(lmi)
 
     slms = []  # SLM stands for 'Symmetric Linear Matrix'
     for lmi in lmis:
-        if isinstance(lmi, Matrix):
+        if lmi.is_Matrix:
             lmi = LMI(lmi)
         lm = lmi.canonical().gts
         slms.append(lm)
 
-    if optimize_by_diag_blocks:
+    if split_blocks:
         orig_slms = slms
         slms = []
         for slm in orig_slms:
@@ -128,7 +128,7 @@ def get_variables(objective_func=0, lmis=[]):
     """
     variables = sympify(objective_func).free_symbols
     for lmi in lmis:
-        if isinstance(lmi, Matrix):
+        if lmi.is_Matrix:
             lm = lmi
         else:
             lm = lmi.canonical().gts
@@ -138,7 +138,7 @@ def get_variables(objective_func=0, lmis=[]):
 
 
 def to_cvxopt(objective_func, lmis, variables, objective_type='minimize',
-              optimize_by_diag_blocks=False):
+              split_blocks=True):
     """Prepare objective and LMI to be used with cvxopt SDP solver.
 
     Parameters
@@ -148,7 +148,7 @@ def to_cvxopt(objective_func, lmis, variables, objective_type='minimize',
     variables: list of symbols
         The variable symbols which form the LMI/SDP space.
     objective_type: 'maximize' or 'minimize', defaults to 'minimize'
-    optimize_by_diag_blocks: bool
+    split_blocks: bool
         If set to True, function tries to subdivide each LMI into
         smaller diagonal blocks
 
@@ -161,8 +161,7 @@ def to_cvxopt(objective_func, lmis, variables, objective_type='minimize',
 
     obj_coeffs = prepare_objective_for_sdp(objective_func, variables,
                                            objective_type)
-    lmi_coeffs = prepare_lmi_for_sdp(lmis, variables,
-                                     optimize_by_diag_blocks)
+    lmi_coeffs = prepare_lmi_for_sdp(lmis, variables, split_blocks)
 
     c = matrix(obj_coeffs)
 
@@ -175,3 +174,78 @@ def to_cvxopt(objective_func, lmis, variables, objective_type='minimize',
         hs.append(matrix(LM0.astype(float).tolist()))
 
     return c, Gs, hs
+
+
+def _sdpa_header(obj_coeffs, lmi_coeffs, comment=None):
+    """Helper funtion to generate headers of SDPA files."""
+    s = '"' + comment + '"\n' if comment is not None else ''
+    s += str(len(obj_coeffs)) + ' = ndim\n'
+    s += str(len(lmi_coeffs)) + ' = nblocks\n'
+    for block in lmi_coeffs:
+        s += str(block[0][1].shape[0]) + ' '
+    s += '= blockstruct\n'
+    for x in obj_coeffs:
+        s += str(x) + ', '
+    s = s[:-2] + ' = objcoeffs\n'
+    return s
+
+
+def to_sdpa_sparse(objective_func, lmis, variables, objective_type='minimize',
+                   split_blocks=True, comment=None):
+    """Put problem (objective and LMIs) into SDPA sparse format."""
+    obj_coeffs = prepare_objective_for_sdp(objective_func, variables,
+                                           objective_type)
+    lmi_coeffs = prepare_lmi_for_sdp(lmis, variables, split_blocks)
+
+    s = _sdpa_header(obj_coeffs, lmi_coeffs, comment)
+
+    def _print_sparse(x, b, m, sign=1):
+        s = ''
+        shape = m.shape
+        for i in range(shape[0]):
+            for j in range(i, shape[1]):
+                e = sign*m[i, j]
+                if e != 0:
+                    s += '%d %d %d %d %s\n' % (x, b, i+1, j+1, str(e))
+        return s
+
+    for b in range(len(lmi_coeffs)):
+        s += _print_sparse(0, b+1, lmi_coeffs[b][1], sign=-1)
+    for x in range(len(obj_coeffs)):
+        for b in range(len(lmi_coeffs)):
+            s += _print_sparse(x+1, b+1, lmi_coeffs[b][0][x])
+
+    return s
+
+
+def to_sdpa_dense(objective_func, lmis, variables, objective_type='minimize',
+                  split_blocks=True, comment=None):
+    """Put SDP problem (objective and LMIs) into SDPA dense format."""
+    obj_coeffs = prepare_objective_for_sdp(objective_func, variables,
+                                           objective_type)
+    lmi_coeffs = prepare_lmi_for_sdp(lmis, variables, split_blocks)
+
+    s = _sdpa_header(obj_coeffs, lmi_coeffs, comment)
+
+    def _print_dense(m, sign=1):
+        s = '\n {'
+        shape = m.shape
+        for i in range(shape[0]):
+            s += '\n  {'
+            for j in range(shape[1]):
+                s += ' ' + str(sign*m[i, j]) + ','
+            s = s[:-1] + ' },'
+        s = s[:-1] + '\n }'
+        return s
+
+    s += '{'
+    for b in range(len(lmi_coeffs)):
+        s += _print_dense(lmi_coeffs[b][1], sign=-1)
+    s += '\n}\n'
+    for x in range(len(obj_coeffs)):
+        s += '{'
+        for b in range(len(lmi_coeffs)):
+            s += _print_dense(lmi_coeffs[b][0][x])
+        s += '\n}\n'
+
+    return s
