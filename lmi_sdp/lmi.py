@@ -125,3 +125,21 @@ class LMI_ND(BaseLMI, StrictLessThan):
         return BaseLMI.__new__(cls, lhs, rhs, StrictLessThan)
 
 LMI = LMI_PSD  # default LMI type
+
+
+def _print_BaseLMI(self, expr):
+
+    charmap = {
+        ">": r"\succ",
+        "<": r"\prec",
+        ">=": r"\succeq",
+        "<=": r"\preceq",
+    }
+
+    return "%s %s %s" % (self._print(expr.lhs),
+        charmap[expr.rel_op], self._print(expr.rhs))
+
+
+def init_lmi_latex_printing():
+    from sympy.printing.latex import LatexPrinter
+    LatexPrinter._print_BaseLMI = _print_BaseLMI

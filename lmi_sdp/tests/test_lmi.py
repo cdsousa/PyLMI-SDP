@@ -1,7 +1,7 @@
-from sympy import Matrix, S
+from sympy import Matrix, S, latex
 from sympy.abc import x, y, z
 from lmi_sdp.lmi import ShapeError, NonSymmetricMatrixError, LMI_PSD, \
-    LMI_NSD, LMI_PD, LMI_ND
+    LMI_NSD, LMI_PD, LMI_ND, init_lmi_latex_printing
 
 
 def test_LMI_PSD():
@@ -59,3 +59,12 @@ def test_LMI_PSD_exceptions():
     except ShapeError:
         except_ok = True
     assert except_ok
+
+
+def test_lmi_latex_printing():
+
+    init_lmi_latex_printing()
+
+    lmi = LMI_PSD(Matrix([[x, y], [y, z+1]]))
+
+    assert r"\succeq 0" == latex(lmi)[-9:]
