@@ -35,6 +35,13 @@ Matrix([
 ![equation](http://latex.codecogs.com/gif.latex?%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7Dx%2B1%26y%2B2%5C%5Cy%2B2%26x%2Bz%5Cend%7Bsmallmatrix%7D%5Cright%5D%5Csucc0)
 
 ```Python
+>>> print(latex(lmi.expanded(variables)))
+\left[\begin{smallmatrix}{}1.0 & 0.0\\0.0 & 1.0\end{smallmatrix}\right] x + \left[\begin{smallmatrix}{}0.0 & 1.0\\1.0 & 0.0\end{smallmatrix}\right] y + \left[\begin{smallmatrix}{}0.0 & 0.0\\0.0 & 1.0\end{smallmatrix}\right] z + \left[\begin{smallmatrix}{}1.0 & 2.0\\2.0 & 0.0\end{smallmatrix}\right] \succ 0
+
+```
+![equation](http://latex.codecogs.com/gif.latex?%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D1.0%260.0%5C%5C0.0%261.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dx%2B%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D0.0%261.0%5C%5C1.0%260.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dy%2B%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D0.0%260.0%5C%5C0.0%261.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dz%2B%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D1.0%262.0%5C%5C2.0%260.0%5Cend%7Bsmallmatrix%7D%5Cright%5D%5Csucc0)
+
+```Python
 >>> lmi_2 = LMI_NSD( Matrix([[-x, -y], [-y, -z-x]]), Matrix([[1, 2], [2, 0]]))
 >>> lmi_2
 Matrix([

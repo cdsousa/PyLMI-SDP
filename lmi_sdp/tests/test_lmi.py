@@ -1,5 +1,6 @@
 from sympy import Matrix, S, latex
 from sympy.abc import x, y, z
+from lmi_sdp.lm import lm_sym_expanded
 from lmi_sdp.lmi import ShapeError, NonSymmetricMatrixError, LMI_PSD, \
     LMI_NSD, LMI_PD, LMI_ND, init_lmi_latex_printing
 
@@ -43,6 +44,18 @@ def test_LMI_canonical():
     assert can.lhs == can.gts == can_lhs
     assert can.rhs == can.lts == can_rhs
     assert isinstance(can, LMI_PD)
+
+
+def test_LMI_expanded():
+    variables = (x, y, z)
+    m = Matrix([[x, y], [y, z+1]])
+    c = Matrix([[0, 1], [1, 2]])
+
+    expdd = LMI_ND(m+c, c).expanded(variables)
+    assert expdd == LMI_ND(lm_sym_expanded(m+c, variables), c)
+
+    expdd = LMI_PSD(m).expanded(variables)
+    assert expdd == LMI_PSD(lm_sym_expanded(m, variables))
 
 
 def test_LMI_PSD_exceptions():

@@ -1,10 +1,12 @@
 """LMI representation and tools"""
 
 from sympy import sympify, GreaterThan, StrictGreaterThan, LessThan, \
-    StrictLessThan
+    StrictLessThan, MatrixExpr
 
 from sympy.matrices.matrices import MatrixError, NonSquareMatrixError, \
     ShapeError
+
+from .lm import lm_sym_expanded
 
 
 class NonSymmetricMatrixError(ValueError, MatrixError):
@@ -19,10 +21,12 @@ class BaseLMI(object):
     def __new__(cls, lhs, rhs, rel_cls):
         lhs = sympify(lhs)
         rhs = sympify(rhs)
-        if lhs.is_Matrix and not lhs.is_symmetric():
-                raise NonSymmetricMatrixError('lhs matrix is not symmetric')
-        if rhs.is_Matrix and not rhs.is_symmetric():
-                raise NonSymmetricMatrixError('rsh matrix is not symmetric')
+        if lhs.is_Matrix and hasattr(lhs, 'is_symmetric') and \
+                not lhs.is_symmetric():
+            raise NonSymmetricMatrixError('lhs matrix is not symmetric')
+        if rhs.is_Matrix and hasattr(rhs, 'is_symmetric') and \
+                not rhs.is_symmetric():
+            raise NonSymmetricMatrixError('rsh matrix is not symmetric')
         if lhs.is_Matrix and rhs.is_Matrix:
                 if lhs.shape != rhs.shape:
                     raise ShapeError('LMI matrices have different shapes')
@@ -49,6 +53,19 @@ class BaseLMI(object):
             return LMI_PD(diff, 0)
         else:
             return LMI_PSD(diff, 0)
+
+    def expanded(self, variables):
+        """Return the LMI as a sum of coefficent matrices times varibles form.
+        """
+        if self.lhs.is_Matrix:
+            lhs = lm_sym_expanded(self.lhs, variables)
+        else:
+            lhs = self.lhs
+        if self.rhs.is_Matrix:
+            rhs = lm_sym_expanded(self.rhs, variables)
+        else:
+            rhs = self.rhs
+        return self.func(lhs, rhs)
 
     def doit(self, **hints):
         if hints.get('deep', False):
@@ -137,7 +154,7 @@ def _print_BaseLMI(self, expr):
     }
 
     return "%s %s %s" % (self._print(expr.lhs),
-        charmap[expr.rel_op], self._print(expr.rhs))
+                         charmap[expr.rel_op], self._print(expr.rhs))
 
 
 def init_lmi_latex_printing():

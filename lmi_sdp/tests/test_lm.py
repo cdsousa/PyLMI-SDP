@@ -1,8 +1,8 @@
-from sympy import Matrix, factor, zeros
+from sympy import Matrix, factor, zeros, MatAdd, MatMul
 from sympy.abc import x, y, z
 import numpy as np
 from lmi_sdp import NonLinearExpressionError, NonSquareMatrixError, NonLinearMatrixError, \
-    lin_expr_coeffs, lm_sym_to_coeffs, lm_coeffs_to_sym
+    lin_expr_coeffs, lm_sym_to_coeffs, lm_coeffs_to_sym, lm_sym_expanded
 
 
 def test_lin_expr_coeffs():
@@ -68,3 +68,15 @@ def test_lm_coeffs_to_sym():
     coeffs = (var_coeffs, consts)
     m = Matrix([[1.2, x], [3.4*y, 1.2 + 3*x - 4.5*y + z]])
     assert lm_coeffs_to_sym(coeffs, [x, y, z]) - m == zeros(2)
+
+
+def test_lm_sym_expanded():
+    m = Matrix([[0, x], [3.4*y, 3*x - 4.5*y + z]])
+    c = Matrix([[1.2, 0], [0, 1.2]])
+    cx = MatMul(Matrix([[0.0, 1.0], [0.0, 3.0]]), x)
+    cy = MatMul(Matrix([[0.0, 0.0], [3.4, -4.5]]), y)
+    cz = MatMul(Matrix([[0.0, 0.0], [0.0, 1.0]]), z)
+    cc = Matrix([[1.2, 0.0], [0.0, 1.2]])
+    assert MatAdd(cx, cy, cz, cc) == lm_sym_expanded(m+c, [x, y, z])
+    assert MatAdd(cx, cy, cz) == lm_sym_expanded(m, [x, y, z])
+    assert cc == lm_sym_expanded(c, [x, y, z])

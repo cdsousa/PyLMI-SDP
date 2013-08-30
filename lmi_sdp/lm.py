@@ -1,5 +1,5 @@
 """Tools for symbolic and numerical representations of linear matrices"""
-from sympy import ImmutableMatrix, S, diag, Dummy
+from sympy import ImmutableMatrix, S, diag, Dummy, MatMul, MatAdd, S
 from sympy.matrices.matrices import MatrixError, NonSquareMatrixError
 import numpy as np
 
@@ -79,3 +79,18 @@ def lm_coeffs_to_sym(coeffs, variables):
         lm += x*ImmutableMatrix(coeffs[0][i])
 
     return lm
+
+
+def lm_sym_expanded(linear_matrix, variables):
+    """Return matrix in the form of sum of coefficent matrices times varibles.
+    """
+    if S(linear_matrix).free_symbols & set(variables):
+        coeffs, const = lm_sym_to_coeffs(linear_matrix, variables)
+        terms = []
+        for i, v in enumerate(variables):
+            terms.append(MatMul(ImmutableMatrix(coeffs[i]), v))
+        if const.any():
+            terms.append(ImmutableMatrix(const))
+        return MatAdd(*terms)
+    else:
+        return linear_matrix

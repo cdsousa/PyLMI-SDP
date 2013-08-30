@@ -1,7 +1,7 @@
 """Interfaces to SDP solvers"""
 
 
-from sympy import Basic, Matrix, Dummy, S, ordered, sympify
+from sympy import Basic, Dummy, S, ordered, sympify
 from numpy import array
 from .lm import lin_expr_coeffs, lm_sym_to_coeffs
 from .lmi import BaseLMI, LMI
