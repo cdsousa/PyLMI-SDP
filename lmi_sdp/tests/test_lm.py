@@ -1,8 +1,9 @@
 from sympy import Matrix, factor, zeros, MatAdd, MatMul
 from sympy.abc import x, y, z
 import numpy as np
-from lmi_sdp import NonLinearExpressionError, NonSquareMatrixError, NonLinearMatrixError, \
-    lin_expr_coeffs, lm_sym_to_coeffs, lm_coeffs_to_sym, lm_sym_expanded
+from lmi_sdp import NonLinearExpressionError, NonSquareMatrixError, \
+    NonLinearMatrixError, lin_expr_coeffs, lm_sym_to_coeffs, \
+    lm_coeffs_to_sym, lm_sym_expanded
 
 
 def test_lin_expr_coeffs():
