@@ -40,30 +40,6 @@ def lin_expr_coeffs(linear_expr, variables):
     return coeffs, const
 
 
-def get_diag_block_idxs(matrix):
-    """Get major indexes of diagonal blocks of squared matrices"""
-    if matrix.shape[0] != matrix.shape[1]:
-        raise NonSquareMatrixError('matrix must be square')
-    b = []
-    n = matrix.shape[0]
-    c = 0
-    while c < n-1:
-        for l in range(n-1, c, -1):
-            if matrix[l, c] != 0 or matrix[c, l] != 0:
-                break
-            elif l == c+1:
-                b.append(l)
-        c = l
-    return b + [n]
-
-
-def split_by_diag_blocks(matrix):
-    """Split a squared matrix into its diagonal blocks"""
-    idxs = get_diag_block_idxs(matrix)
-    blocks = [matrix[a:b, a:b] for (a, b) in zip([0]+idxs[:-1], idxs)]
-    return blocks
-
-
 def lm_sym_to_coeffs(linear_matrix, variables):
     """Convert a symbolic matrix linear w.r.t. variables into a list of
     numerical coefficient matrices

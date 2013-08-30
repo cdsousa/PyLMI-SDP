@@ -3,7 +3,7 @@
 
 from sympy import Basic, Matrix, Dummy, S, ordered, sympify
 from numpy import array
-from .lm import lin_expr_coeffs, split_by_diag_blocks, lm_sym_to_coeffs
+from .lm import lin_expr_coeffs, lm_sym_to_coeffs
 from .lmi import BaseLMI, LMI
 
 
@@ -73,7 +73,7 @@ def lmi_to_coeffs(lmi, variables, split_blocks=False):
         orig_slms = slms
         slms = []
         for slm in orig_slms:
-            slms += split_by_diag_blocks(slm)
+            slms += slm.get_diag_blocks()
 
     coeffs = [lm_sym_to_coeffs(slm, variables) for slm in slms]
 
