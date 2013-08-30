@@ -21,7 +21,7 @@ else:
     from cvxopt import matrix
 
 
-def prepare_lmi_for_sdp(lmi, variables, split_blocks=False):
+def lmi_to_coeffs(lmi, variables, split_blocks=False):
     """Transforms LMIs from symbolic to numerical.
 
     Parameters
@@ -46,11 +46,11 @@ def prepare_lmi_for_sdp(lmi, variables, split_blocks=False):
     -------
     >>> from sympy import Matrix
     >>> from sympy.abc import x, y, z
-    >>> from lmi_sdp import LMI_PSD, prepare_lmi_for_sdp
+    >>> from lmi_sdp import LMI_PSD, lmi_to_coeffs
     >>> vars = [x, y, z]
     >>> m = Matrix([[x+3, y-2], [y-2, z]])
     >>> lmi = LMI_PSD(m)
-    >>> prepare_lmi_for_sdp(lmi, vars)
+    >>> lmi_to_coeffs(lmi, vars)
     [([array([[ 1.,  0.],
            [ 0.,  0.]]), array([[ 0.,  1.],
            [ 1.,  0.]]), array([[ 0.,  0.],
@@ -80,8 +80,8 @@ def prepare_lmi_for_sdp(lmi, variables, split_blocks=False):
     return coeffs
 
 
-def prepare_objective_for_sdp(objective_func, variables,
-                              objective_type='minimize'):
+def objective_to_coeffs(objective_func, variables,
+                        objective_type='minimize'):
     """Extracts variable coefficients from symbolic minimization objective
     funtion.
 
@@ -102,12 +102,12 @@ def prepare_objective_for_sdp(objective_func, variables,
     Example
     -------
     >>> from sympy.abc import x, y, z
-    >>> from lmi_sdp import prepare_objective_for_sdp
+    >>> from lmi_sdp import objective_to_coeffs
     >>> vars = [x, y, z]
     >>> expr = 1.1 + x + 2.2*y
-    >>> prepare_objective_for_sdp(expr, vars)
+    >>> objective_to_coeffs(expr, vars)
     [1.0, 2.2, 0.0]
-    >>> prepare_objective_for_sdp(expr, vars, 'maximize')
+    >>> objective_to_coeffs(expr, vars, 'maximize')
     [-1.0, -2.2, 0.0]
     """
     objective_type = objective_type.lower()
@@ -159,9 +159,9 @@ def to_cvxopt(objective_func, lmis, variables, objective_type='minimize',
     if cvxopt is None:
         raise NotAvailableError(to_cvxopt.__name__)
 
-    obj_coeffs = prepare_objective_for_sdp(objective_func, variables,
-                                           objective_type)
-    lmi_coeffs = prepare_lmi_for_sdp(lmis, variables, split_blocks)
+    obj_coeffs = objective_to_coeffs(objective_func, variables,
+                                     objective_type)
+    lmi_coeffs = lmi_to_coeffs(lmis, variables, split_blocks)
 
     c = matrix(obj_coeffs)
 
@@ -193,9 +193,9 @@ def _sdpa_header(obj_coeffs, lmi_coeffs, comment=None):
 def to_sdpa_sparse(objective_func, lmis, variables, objective_type='minimize',
                    split_blocks=True, comment=None):
     """Put problem (objective and LMIs) into SDPA sparse format."""
-    obj_coeffs = prepare_objective_for_sdp(objective_func, variables,
-                                           objective_type)
-    lmi_coeffs = prepare_lmi_for_sdp(lmis, variables, split_blocks)
+    obj_coeffs = objective_to_coeffs(objective_func, variables,
+                                     objective_type)
+    lmi_coeffs = lmi_to_coeffs(lmis, variables, split_blocks)
 
     s = _sdpa_header(obj_coeffs, lmi_coeffs, comment)
 
@@ -221,9 +221,9 @@ def to_sdpa_sparse(objective_func, lmis, variables, objective_type='minimize',
 def to_sdpa_dense(objective_func, lmis, variables, objective_type='minimize',
                   split_blocks=True, comment=None):
     """Put SDP problem (objective and LMIs) into SDPA dense format."""
-    obj_coeffs = prepare_objective_for_sdp(objective_func, variables,
-                                           objective_type)
-    lmi_coeffs = prepare_lmi_for_sdp(lmis, variables, split_blocks)
+    obj_coeffs = objective_to_coeffs(objective_func, variables,
+                                     objective_type)
+    lmi_coeffs = lmi_to_coeffs(lmis, variables, split_blocks)
 
     s = _sdpa_header(obj_coeffs, lmi_coeffs, comment)
 
