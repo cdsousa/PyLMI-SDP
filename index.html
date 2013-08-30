@@ -1,0 +1,256 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>PyLMI-SDP by cdsousa</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>PyLMI-SDP</h1>
+        <p>Symbolic linear matrix inequalities (LMI) and semi-definite programming (SDP) tools for Python</p>
+
+        <p class="view"><a href="https://github.com/cdsousa/PyLMI-SDP">View the Project on GitHub <small>cdsousa/PyLMI-SDP</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/cdsousa/PyLMI-SDP/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/cdsousa/PyLMI-SDP/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/cdsousa/PyLMI-SDP">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="pylmi-sdp" class="anchor" href="#pylmi-sdp"><span class="octicon octicon-link"></span></a>PyLMI-SDP</h1>
+
+<p><em>Symbolic linear matrix inequalities (LMI) and semi-definite programming (SDP) tools for Python</em></p>
+
+<p>This package includes a set of classes to represent and manipulate LMIs symbolically using <a href="http://sympy.org">SymPy</a>.
+It also includes tools to export LMIs to <a href="http://abel.ee.ucla.edu/cvxopt/userguide/coneprog.html#semidefinite-programming">CVXOPT</a> SDP input and to the <a href="http://sdpa.sourceforge.net/">SDPA</a> format.</p>
+
+<p>Depends on <a href="http://sympy.org">SymPy</a> and <a href="http://www.numpy.org/">NumPy</a>, and optionally on <a href="http://cvxopt.org/">CVXOPT</a>.</p>
+
+<h2>
+<a name="lmi-definition" class="anchor" href="#lmi-definition"><span class="octicon octicon-link"></span></a>LMI Definition</h2>
+
+<h3>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h3>
+
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">Matrix</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">lmi_sdp</span> <span class="kn">import</span> <span class="n">LMI_PD</span><span class="p">,</span> <span class="n">LMI_NSD</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">variables</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s">'x y z'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">variables</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">lmi</span> <span class="o">=</span> <span class="n">LMI_PD</span><span class="p">(</span><span class="n">Matrix</span><span class="p">([[</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="o">+</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="n">y</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">z</span><span class="o">+</span><span class="n">x</span><span class="p">]]))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">lmi</span>
+<span class="n">Matrix</span><span class="p">([</span>
+<span class="p">[</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">],</span>
+<span class="p">[</span><span class="n">y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">z</span><span class="p">]])</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+</pre></div>
+
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">lmi_sdp</span> <span class="kn">import</span> <span class="n">init_lmi_latex_printing</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">latex</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">init_lmi_latex_printing</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">latex</span><span class="p">(</span><span class="n">lmi</span><span class="p">))</span>
+\<span class="n">left</span><span class="p">[</span>\<span class="n">begin</span><span class="p">{</span><span class="n">smallmatrix</span><span class="p">}{}</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&amp;</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">2</span>\\<span class="n">y</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">&amp;</span> <span class="n">x</span> <span class="o">+</span> <span class="n">z</span>\<span class="n">end</span><span class="p">{</span><span class="n">smallmatrix</span><span class="p">}</span>\<span class="n">right</span><span class="p">]</span> \<span class="n">succ</span> <span class="mi">0</span>
+
+</pre></div>
+
+<p><img src="http://latex.codecogs.com/gif.latex?%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7Dx%2B1%26y%2B2%5C%5Cy%2B2%26x%2Bz%5Cend%7Bsmallmatrix%7D%5Cright%5D%5Csucc0" alt="equation"></p>
+
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">latex</span><span class="p">(</span><span class="n">lmi</span><span class="o">.</span><span class="n">expanded</span><span class="p">(</span><span class="n">variables</span><span class="p">)))</span>
+\<span class="n">left</span><span class="p">[</span>\<span class="n">begin</span><span class="p">{</span><span class="n">smallmatrix</span><span class="p">}{}</span><span class="mf">1.0</span> <span class="o">&amp;</span> <span class="mf">0.0</span>\\<span class="mf">0.0</span> <span class="o">&amp;</span> <span class="mf">1.0</span>\<span class="n">end</span><span class="p">{</span><span class="n">smallmatrix</span><span class="p">}</span>\<span class="n">right</span><span class="p">]</span> <span class="n">x</span> <span class="o">+</span> \<span class="n">left</span><span class="p">[</span>\<span class="n">begin</span><span class="p">{</span><span class="n">smallmatrix</span><span class="p">}{}</span><span class="mf">0.0</span> <span class="o">&amp;</span> <span class="mf">1.0</span>\\<span class="mf">1.0</span> <span class="o">&amp;</span> <span class="mf">0.0</span>\<span class="n">end</span><span class="p">{</span><span class="n">smallmatrix</span><span class="p">}</span>\<span class="n">right</span><span class="p">]</span> <span class="n">y</span> <span class="o">+</span> \<span class="n">left</span><span class="p">[</span>\<span class="n">begin</span><span class="p">{</span><span class="n">smallmatrix</span><span class="p">}{}</span><span class="mf">0.0</span> <span class="o">&amp;</span> <span class="mf">0.0</span>\\<span class="mf">0.0</span> <span class="o">&amp;</span> <span class="mf">1.0</span>\<span class="n">end</span><span class="p">{</span><span class="n">smallmatrix</span><span class="p">}</span>\<span class="n">right</span><span class="p">]</span> <span class="n">z</span> <span class="o">+</span> \<span class="n">left</span><span class="p">[</span>\<span class="n">begin</span><span class="p">{</span><span class="n">smallmatrix</span><span class="p">}{}</span><span class="mf">1.0</span> <span class="o">&amp;</span> <span class="mf">2.0</span>\\<span class="mf">2.0</span> <span class="o">&amp;</span> <span class="mf">0.0</span>\<span class="n">end</span><span class="p">{</span><span class="n">smallmatrix</span><span class="p">}</span>\<span class="n">right</span><span class="p">]</span> \<span class="n">succ</span> <span class="mi">0</span>
+
+</pre></div>
+
+<p><img src="http://latex.codecogs.com/gif.latex?%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D1.0%260.0%5C%5C0.0%261.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dx%2B%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D0.0%261.0%5C%5C1.0%260.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dy%2B%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D0.0%260.0%5C%5C0.0%261.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dz%2B%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D1.0%262.0%5C%5C2.0%260.0%5Cend%7Bsmallmatrix%7D%5Cright%5D%5Csucc0" alt="equation"></p>
+
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">lmi_2</span> <span class="o">=</span> <span class="n">LMI_NSD</span><span class="p">(</span> <span class="n">Matrix</span><span class="p">([[</span><span class="o">-</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="n">y</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="n">y</span><span class="p">,</span> <span class="o">-</span><span class="n">z</span><span class="o">-</span><span class="n">x</span><span class="p">]]),</span> <span class="n">Matrix</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">lmi_2</span>
+<span class="n">Matrix</span><span class="p">([</span>
+<span class="p">[</span><span class="o">-</span><span class="n">x</span><span class="p">,</span>     <span class="o">-</span><span class="n">y</span><span class="p">],</span>
+<span class="p">[</span><span class="o">-</span><span class="n">y</span><span class="p">,</span> <span class="o">-</span><span class="n">x</span> <span class="o">-</span> <span class="n">z</span><span class="p">]])</span> <span class="o">&lt;=</span> <span class="n">Matrix</span><span class="p">([</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">lmi_2</span><span class="o">.</span><span class="n">canonical</span><span class="p">()</span>
+<span class="n">Matrix</span><span class="p">([</span>
+<span class="p">[</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">],</span>
+<span class="p">[</span><span class="n">y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">z</span><span class="p">]])</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+
+</pre></div>
+
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">latex</span><span class="p">(</span><span class="n">lmi_2</span><span class="p">))</span>
+\<span class="n">left</span><span class="p">[</span>\<span class="n">begin</span><span class="p">{</span><span class="n">smallmatrix</span><span class="p">}{}</span><span class="o">-</span> <span class="n">x</span> <span class="o">&amp;</span> <span class="o">-</span> <span class="n">y</span>\\<span class="o">-</span> <span class="n">y</span> <span class="o">&amp;</span> <span class="o">-</span> <span class="n">x</span> <span class="o">-</span> <span class="n">z</span>\<span class="n">end</span><span class="p">{</span><span class="n">smallmatrix</span><span class="p">}</span>\<span class="n">right</span><span class="p">]</span> \<span class="n">preceq</span> \<span class="n">left</span><span class="p">[</span>\<span class="n">begin</span><span class="p">{</span><span class="n">smallmatrix</span><span class="p">}{}</span><span class="mi">1</span> <span class="o">&amp;</span> <span class="mi">2</span>\\<span class="mi">2</span> <span class="o">&amp;</span> <span class="mi">0</span>\<span class="n">end</span><span class="p">{</span><span class="n">smallmatrix</span><span class="p">}</span>\<span class="n">right</span><span class="p">]</span>
+
+</pre></div>
+
+<p><img src="http://latex.codecogs.com/gif.latex?%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D-x%26-y%5C%5C-y%26-x-z%5Cend%7Bsmallmatrix%7D%5Cright%5D%5Cpreceq%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D1%262%5C%5C2%260%5Cend%7Bsmallmatrix%7D%5Cright%5D" alt="equation"></p>
+
+<h2>
+<a name="convertion-to-cvxopt-sdp" class="anchor" href="#convertion-to-cvxopt-sdp"><span class="octicon octicon-link"></span></a>Convertion to CVXOPT SDP</h2>
+
+<h3>
+<a name="example" class="anchor" href="#example"><span class="octicon octicon-link"></span></a>Example</h3>
+
+<p>(from CVXOPT <a href="http://abel.ee.ucla.edu/cvxopt/userguide/coneprog.html#semidefinite-programming">SDP example</a>)</p>
+
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">Matrix</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">lmi_sdp</span> <span class="kn">import</span> <span class="n">LMI_NSD</span><span class="p">,</span> <span class="n">init_lmi_latex_printing</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">init_lmi_latex_printing</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">variables</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s">'x1 x2 x3'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span> <span class="o">=</span> <span class="n">variables</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">min_obj</span> <span class="o">=</span> <span class="n">x1</span> <span class="o">-</span> <span class="n">x2</span> <span class="o">+</span> <span class="n">x3</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">LMI_1</span> <span class="o">=</span> <span class="n">LMI_NSD</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">x1</span><span class="o">*</span><span class="n">Matrix</span><span class="p">([[</span><span class="o">-</span><span class="mi">7</span><span class="p">,</span> <span class="o">-</span><span class="mi">11</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">11</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span> <span class="o">+</span>
+<span class="o">...</span>     <span class="n">x2</span><span class="o">*</span><span class="n">Matrix</span><span class="p">([[</span><span class="mi">7</span><span class="p">,</span> <span class="o">-</span><span class="mi">18</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">18</span><span class="p">,</span> <span class="mi">8</span><span class="p">]])</span> <span class="o">+</span>
+<span class="o">...</span>     <span class="n">x3</span><span class="o">*</span><span class="n">Matrix</span><span class="p">([[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]),</span>
+<span class="o">...</span>     <span class="n">Matrix</span><span class="p">([[</span><span class="mi">33</span><span class="p">,</span> <span class="o">-</span><span class="mi">9</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">9</span><span class="p">,</span> <span class="mi">26</span><span class="p">]]))</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">LMI_2</span> <span class="o">=</span> <span class="n">LMI_NSD</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">x1</span><span class="o">*</span><span class="n">Matrix</span><span class="p">([[</span><span class="o">-</span><span class="mi">21</span><span class="p">,</span> <span class="o">-</span><span class="mi">11</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">11</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">]])</span> <span class="o">+</span>
+<span class="o">...</span>     <span class="n">x2</span><span class="o">*</span><span class="n">Matrix</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">16</span><span class="p">],</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span> <span class="o">+</span>
+<span class="o">...</span>     <span class="n">x3</span><span class="o">*</span><span class="n">Matrix</span><span class="p">([[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">17</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">17</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">]]),</span>
+<span class="o">...</span>     <span class="n">Matrix</span><span class="p">([[</span><span class="mi">14</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">91</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">]]))</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">min_obj</span>
+<span class="n">x1</span> <span class="o">-</span> <span class="n">x2</span> <span class="o">+</span> <span class="n">x3</span>
+
+</pre></div>
+
+<p><img src="http://latex.codecogs.com/gif.latex?x_%7B1%7D-x_%7B2%7D%2Bx_%7B3%7D" alt="equation"></p>
+
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">LMI_1</span><span class="o">.</span><span class="n">expanded</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span>
+<span class="n">Matrix</span><span class="p">([</span>
+<span class="p">[</span> <span class="o">-</span><span class="mf">7.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">11.0</span><span class="p">],</span>
+<span class="p">[</span><span class="o">-</span><span class="mf">11.0</span><span class="p">,</span>   <span class="mf">3.0</span><span class="p">]])</span><span class="o">*</span><span class="n">x1</span> <span class="o">+</span> <span class="n">Matrix</span><span class="p">([</span>
+<span class="p">[</span>  <span class="mf">7.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">18.0</span><span class="p">],</span>
+<span class="p">[</span><span class="o">-</span><span class="mf">18.0</span><span class="p">,</span>   <span class="mf">8.0</span><span class="p">]])</span><span class="o">*</span><span class="n">x2</span> <span class="o">+</span> <span class="n">Matrix</span><span class="p">([</span>
+<span class="p">[</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.0</span><span class="p">],</span>
+<span class="p">[</span><span class="o">-</span><span class="mf">8.0</span><span class="p">,</span>  <span class="mf">1.0</span><span class="p">]])</span><span class="o">*</span><span class="n">x3</span> <span class="o">&lt;=</span> <span class="n">Matrix</span><span class="p">([</span>
+<span class="p">[</span><span class="mi">33</span><span class="p">,</span> <span class="o">-</span><span class="mi">9</span><span class="p">],</span>
+<span class="p">[</span><span class="o">-</span><span class="mi">9</span><span class="p">,</span> <span class="mi">26</span><span class="p">]])</span>
+
+</pre></div>
+
+<p><img src="http://latex.codecogs.com/gif.latex?%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D-7.0%26-11.0%5C%5C-11.0%263.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dx_%7B1%7D%2B%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D7.0%26-18.0%5C%5C-18.0%268.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dx_%7B2%7D%2B%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D-2.0%26-8.0%5C%5C-8.0%261.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dx_%7B3%7D%5Cpreceq%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D33%26-9%5C%5C-9%2626%5Cend%7Bsmallmatrix%7D%5Cright%5D" alt="equation"></p>
+
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">LMI_2</span><span class="o">.</span><span class="n">expanded</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span>
+<span class="n">Matrix</span><span class="p">([</span>
+<span class="p">[</span><span class="o">-</span><span class="mf">21.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">11.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+<span class="p">[</span><span class="o">-</span><span class="mf">11.0</span><span class="p">,</span>  <span class="mf">10.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">],</span>
+<span class="p">[</span>  <span class="mf">0.0</span><span class="p">,</span>   <span class="mf">8.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]])</span><span class="o">*</span><span class="n">x1</span> <span class="o">+</span> <span class="n">Matrix</span><span class="p">([</span>
+<span class="p">[</span> <span class="mf">0.0</span><span class="p">,</span>  <span class="mf">10.0</span><span class="p">,</span>  <span class="mf">16.0</span><span class="p">],</span>
+<span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">10.0</span><span class="p">],</span>
+<span class="p">[</span><span class="mf">16.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">10.0</span><span class="p">,</span>   <span class="mf">3.0</span><span class="p">]])</span><span class="o">*</span><span class="n">x2</span> <span class="o">+</span> <span class="n">Matrix</span><span class="p">([</span>
+<span class="p">[</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">,</span>  <span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">17.0</span><span class="p">],</span>
+<span class="p">[</span>  <span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">6.0</span><span class="p">,</span>   <span class="mf">8.0</span><span class="p">],</span>
+<span class="p">[</span><span class="o">-</span><span class="mf">17.0</span><span class="p">,</span>  <span class="mf">8.0</span><span class="p">,</span>   <span class="mf">6.0</span><span class="p">]])</span><span class="o">*</span><span class="n">x3</span> <span class="o">&lt;=</span> <span class="n">Matrix</span><span class="p">([</span>
+<span class="p">[</span><span class="mi">14</span><span class="p">,</span>  <span class="mi">9</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span>
+<span class="p">[</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">91</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>
+<span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">]])</span>
+
+</pre></div>
+
+<p><img src="http://latex.codecogs.com/gif.latex?%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D-21.0%26-11.0%260.0%5C%5C-11.0%2610.0%268.0%5C%5C0.0%268.0%265.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dx_%7B1%7D%2B%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D0.0%2610.0%2616.0%5C%5C10.0%26-10.0%26-10.0%5C%5C16.0%26-10.0%263.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dx_%7B2%7D%2B%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D-5.0%262.0%26-17.0%5C%5C2.0%26-6.0%268.0%5C%5C-17.0%268.0%266.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dx_%7B3%7D%5Cpreceq%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D14%269%2640%5C%5C9%2691%2610%5C%5C40%2610%2615%5Cend%7Bsmallmatrix%7D%5Cright%5D" alt="equation"></p>
+
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">solvers</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">lmi_sdp</span> <span class="kn">import</span> <span class="n">to_cvxopt</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">solvers</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s">'show_progress'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span><span class="p">,</span> <span class="n">Gs</span><span class="p">,</span> <span class="n">hs</span> <span class="o">=</span> <span class="n">to_cvxopt</span><span class="p">(</span><span class="n">min_obj</span><span class="p">,</span> <span class="p">[</span><span class="n">LMI_1</span><span class="p">,</span> <span class="n">LMI_2</span><span class="p">],</span> <span class="n">variables</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">solvers</span><span class="o">.</span><span class="n">sdp</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">Gs</span><span class="o">=</span><span class="n">Gs</span><span class="p">,</span> <span class="n">hs</span><span class="o">=</span><span class="n">hs</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">sol</span><span class="p">[</span><span class="s">'x'</span><span class="p">])</span>
+<span class="p">[</span><span class="o">-</span><span class="mf">3.68e-01</span><span class="p">]</span>
+<span class="p">[</span> <span class="mf">1.90e+00</span><span class="p">]</span>
+<span class="p">[</span><span class="o">-</span><span class="mf">8.88e-01</span><span class="p">]</span>
+<span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
+
+</pre></div>
+
+<h2>
+<a name="export-to-sdpa-format" class="anchor" href="#export-to-sdpa-format"><span class="octicon octicon-link"></span></a>Export to SDPA Format</h2>
+
+<h3>
+<a name="example-1" class="anchor" href="#example-1"><span class="octicon octicon-link"></span></a>Example</h3>
+
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">Matrix</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">lmi_sdp</span> <span class="kn">import</span> <span class="n">LMI_PSD</span><span class="p">,</span> <span class="n">to_sdpa_sparse</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">variables</span> <span class="o">=</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s">'x1 x2'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">min_obj</span> <span class="o">=</span> <span class="mi">10</span><span class="o">*</span><span class="n">x1</span> <span class="o">+</span> <span class="mi">20</span><span class="o">*</span><span class="n">x2</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">lmi_1</span> <span class="o">=</span> <span class="n">LMI_PSD</span><span class="p">(</span>
+<span class="o">...</span>     <span class="o">-</span><span class="n">Matrix</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span> <span class="o">+</span>
+<span class="o">...</span>     <span class="n">Matrix</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span><span class="o">*</span><span class="n">x1</span> <span class="o">+</span>
+<span class="o">...</span>     <span class="n">Matrix</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">]])</span><span class="o">*</span><span class="n">x2</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">lmi_1</span>
+<span class="n">Matrix</span><span class="p">([</span>
+<span class="p">[</span><span class="n">x1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>           <span class="mi">0</span><span class="p">,</span>        <span class="mi">0</span><span class="p">,</span>        <span class="mi">0</span><span class="p">],</span>
+<span class="p">[</span>     <span class="mi">0</span><span class="p">,</span> <span class="n">x1</span> <span class="o">+</span> <span class="n">x2</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span>        <span class="mi">0</span><span class="p">,</span>        <span class="mi">0</span><span class="p">],</span>
+<span class="p">[</span>     <span class="mi">0</span><span class="p">,</span>           <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="o">*</span><span class="n">x2</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span>     <span class="mi">2</span><span class="o">*</span><span class="n">x2</span><span class="p">],</span>
+<span class="p">[</span>     <span class="mi">0</span><span class="p">,</span>           <span class="mi">0</span><span class="p">,</span>     <span class="mi">2</span><span class="o">*</span><span class="n">x2</span><span class="p">,</span> <span class="mi">6</span><span class="o">*</span><span class="n">x2</span> <span class="o">-</span> <span class="mi">4</span><span class="p">]])</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dat</span> <span class="o">=</span> <span class="n">to_sdpa_sparse</span><span class="p">(</span><span class="n">min_obj</span><span class="p">,</span> <span class="n">lmi_1</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s">'test sparse'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+<span class="s">"test sparse"</span>
+<span class="mi">2</span> <span class="o">=</span> <span class="n">ndim</span>
+<span class="mi">3</span> <span class="o">=</span> <span class="n">nblocks</span>
+<span class="mi">1</span> <span class="mi">1</span> <span class="mi">2</span> <span class="o">=</span> <span class="n">blockstruct</span>
+<span class="mf">10.0</span><span class="p">,</span> <span class="mf">20.0</span> <span class="o">=</span> <span class="n">objcoeffs</span>
+<span class="mi">0</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mf">1.0</span>
+<span class="mi">0</span> <span class="mi">2</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mf">2.0</span>
+<span class="mi">0</span> <span class="mi">3</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mf">3.0</span>
+<span class="mi">0</span> <span class="mi">3</span> <span class="mi">2</span> <span class="mi">2</span> <span class="mf">4.0</span>
+<span class="mi">1</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mf">1.0</span>
+<span class="mi">1</span> <span class="mi">2</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mf">1.0</span>
+<span class="mi">2</span> <span class="mi">2</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mf">1.0</span>
+<span class="mi">2</span> <span class="mi">3</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mf">5.0</span>
+<span class="mi">2</span> <span class="mi">3</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mf">2.0</span>
+<span class="mi">2</span> <span class="mi">3</span> <span class="mi">2</span> <span class="mi">2</span> <span class="mf">6.0</span>
+<span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
+
+</pre></div>
+
+<h2>
+<a name="author" class="anchor" href="#author"><span class="octicon octicon-link"></span></a>Author</h2>
+
+<p><a href="https://github.com/cdsousa">Cristóvão Duarte Sousa</a></p>
+
+<h2>
+<a name="install" class="anchor" href="#install"><span class="octicon octicon-link"></span></a>Install</h2>
+
+<p>From git source:</p>
+
+<pre><code>git clone git@github.com:cdsousa/PyLMI-SDP.git
+cd PyLMI-SDP
+python setup.py install
+</code></pre>
+
+<h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>Simplified BSD License. See <a href="LICENSE.txt">License File</a></p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/cdsousa">cdsousa</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
