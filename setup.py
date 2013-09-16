@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='PyLMI-SDP',
-    version='0.1-git',
+    version='0.2',
     author='Cristovao D. Sousa',
     author_email='crisjss@gmail.com',
     description=('Symbolic linear matrix inequalities (LMI) and semi-definite'
