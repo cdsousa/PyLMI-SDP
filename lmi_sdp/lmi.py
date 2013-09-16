@@ -1,10 +1,9 @@
 """LMI representation and tools"""
 
 from sympy import sympify, GreaterThan, StrictGreaterThan, LessThan, \
-    StrictLessThan, MatrixExpr
+    StrictLessThan, MatrixExpr, block_collapse
 
-from sympy.matrices.matrices import MatrixError, NonSquareMatrixError, \
-    ShapeError
+from sympy.matrices.matrices import MatrixError, ShapeError
 
 from .lm import lm_sym_expanded
 
@@ -18,15 +17,16 @@ class BaseLMI(object):
 
     BaseLMI is used so that LMI_* classes can share functions.
     """
-    def __new__(cls, lhs, rhs, rel_cls):
+    def __new__(cls, lhs, rhs, rel_cls, assert_symmetry=True):
         lhs = sympify(lhs)
         rhs = sympify(rhs)
-        if lhs.is_Matrix and hasattr(lhs, 'is_symmetric') and \
-                not lhs.is_symmetric():
-            raise NonSymmetricMatrixError('lhs matrix is not symmetric')
-        if rhs.is_Matrix and hasattr(rhs, 'is_symmetric') and \
-                not rhs.is_symmetric():
-            raise NonSymmetricMatrixError('rsh matrix is not symmetric')
+        if assert_symmetry:
+            if lhs.is_Matrix and hasattr(lhs, 'is_symmetric') and \
+                    not lhs.is_symmetric():
+                raise NonSymmetricMatrixError('lhs matrix is not symmetric')
+            if rhs.is_Matrix and hasattr(rhs, 'is_symmetric') and \
+                    not rhs.is_symmetric():
+                raise NonSymmetricMatrixError('rsh matrix is not symmetric')
         if lhs.is_Matrix and rhs.is_Matrix:
                 if lhs.shape != rhs.shape:
                     raise ShapeError('LMI matrices have different shapes')
@@ -45,9 +45,14 @@ class BaseLMI(object):
             if self.lts.is_Matrix:
                 diff = self.gts - self.lts
             else:
-                diff = self.gts
+                if isinstance(self, (LMI_PD, LMI_PSD)):
+                    return self  # self is already in canonical form
+                else:
+                    diff = self.gts
         else:
             diff = -self.lts
+
+        diff = block_collapse(diff)
 
         if self.is_strict:
             return LMI_PD(diff, 0)
@@ -82,6 +87,9 @@ class LMI_PSD(BaseLMI, GreaterThan):
     Represents a non-stric LMI where left-hand side minus
     right-hand side (if any) is Positive Semi-Definite.
 
+    Input matrices are checked for symmetry, pass `assert_symmetry=False`
+    to force no symmetry assertion.
+
     Example:
     >>> from sympy import Matrix
     >>> from sympy.abc import x, y, z
@@ -102,8 +110,8 @@ class LMI_PSD(BaseLMI, GreaterThan):
     """
     is_strict = False
 
-    def __new__(cls, lhs, rhs=0):
-        return BaseLMI.__new__(cls, lhs, rhs, GreaterThan)
+    def __new__(cls, lhs, rhs=0, assert_symmetry=True):
+        return BaseLMI.__new__(cls, lhs, rhs, GreaterThan, assert_symmetry)
 
 
 class LMI_PD(BaseLMI, StrictGreaterThan):
@@ -111,11 +119,14 @@ class LMI_PD(BaseLMI, StrictGreaterThan):
 
     Represents a stric LMI where left-hand side minus
     right-hand side (if any) is Positive Definite.
+
+    See LMI_PSD.__doc__ for common info
     """
     is_strict = True
 
-    def __new__(cls, lhs, rhs=0):
-        return BaseLMI.__new__(cls, lhs, rhs, StrictGreaterThan)
+    def __new__(cls, lhs, rhs=0, assert_symmetry=True):
+        return BaseLMI.__new__(cls, lhs, rhs, StrictGreaterThan,
+                               assert_symmetry)
 
 
 class LMI_NSD(BaseLMI, LessThan):
@@ -123,11 +134,13 @@ class LMI_NSD(BaseLMI, LessThan):
 
     Represents a non-stric LMI where left-hand side minus
     right-hand side (if any) is Negative Semi-Definite.
+
+    See LMI_PSD.__doc__ for common info
     """
     is_strict = False
 
-    def __new__(cls, lhs, rhs=0):
-        return BaseLMI.__new__(cls, lhs, rhs, LessThan)
+    def __new__(cls, lhs, rhs=0, assert_symmetry=True):
+        return BaseLMI.__new__(cls, lhs, rhs, LessThan, assert_symmetry)
 
 
 class LMI_ND(BaseLMI, StrictLessThan):
@@ -135,11 +148,13 @@ class LMI_ND(BaseLMI, StrictLessThan):
 
     Represents a stric LMI where left-hand side minus
     right-hand side (if any) is Negative Definite.
+
+    See LMI_PSD.__doc__ for common info
     """
     is_strict = True
 
-    def __new__(cls, lhs, rhs=0):
-        return BaseLMI.__new__(cls, lhs, rhs, StrictLessThan)
+    def __new__(cls, lhs, rhs=0, assert_symmetry=True):
+        return BaseLMI.__new__(cls, lhs, rhs, StrictLessThan, assert_symmetry)
 
 LMI = LMI_PSD  # default LMI type
 

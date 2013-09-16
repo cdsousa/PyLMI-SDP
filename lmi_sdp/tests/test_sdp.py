@@ -1,4 +1,4 @@
-from sympy import Matrix, symbols, pi
+from sympy import Matrix, symbols, pi, BlockDiagMatrix
 from sympy.abc import x, y, z
 from numpy import array
 from numpy.testing import assert_array_equal
@@ -15,8 +15,41 @@ def test_lmi_to_coeffs():
     m2 = Matrix([[y, 0], [0, 2*x]])
     c2 = Matrix([[30, 0], [0, 40]])
     lmi2 = LMI_NSD(m2, c2)
-    coeffs = lmi_to_coeffs([lmi1, lmi2], vars,
-                           split_blocks=True)
+    expected = [([array([[1., 0.],
+                         [0., 0.]]),
+                  array([[0., 1.],
+                         [1., 0.]]),
+                  array([[0., 0.],
+                         [0., 1.]])],
+                 array([[0., -1.],
+                        [-1., -1.]])),
+                ([array([[0., 0.], [0., -2]]),
+                  array([[-1., 0.], [0., 0.]]),
+                  array([[0., 0.], [0., 0.]])],
+                 array([[30., 0.], [0., 40.]]))]
+
+    coeffs = lmi_to_coeffs([lmi1, lmi2], vars)
+    for i in range(len(coeffs)):
+        assert_array_equal(coeffs[i][0], expected[i][0])
+        assert_array_equal(coeffs[i][1], expected[i][1])
+
+    m3 = BlockDiagMatrix(m1-c1, -m2+c2)
+    lmi3 = LMI_PSD(m3)
+    coeffs = lmi_to_coeffs(lmi3, vars,
+                           split_blocks='BlockDiagMatrix')
+    for i in range(len(coeffs)):
+        assert_array_equal(coeffs[i][0], expected[i][0])
+        assert_array_equal(coeffs[i][1], expected[i][1])
+
+
+def test_lmi_to_coeffs_split():
+    vars = [x, y, z]
+    m1 = Matrix([[x, y], [y, z+1]])
+    c1 = Matrix([[0, 1], [1, 2]])
+    lmi1 = LMI_PSD(m1, c1)
+    m2 = Matrix([[y, 0], [0, 2*x]])
+    c2 = Matrix([[30, 0], [0, 40]])
+    lmi2 = LMI_NSD(m2, c2)
     expected = [([array([[1., 0.],
                          [0., 0.]]),
                   array([[0., 1.],
@@ -33,6 +66,17 @@ def test_lmi_to_coeffs():
                   array([[0.]]),
                   array([[0.]])],
                  array([[40.]]))]
+
+    coeffs = lmi_to_coeffs([lmi1, lmi2], vars,
+                           split_blocks=True)
+    for i in range(len(coeffs)):
+        assert_array_equal(coeffs[i][0], expected[i][0])
+        assert_array_equal(coeffs[i][1], expected[i][1])
+
+    m3 = BlockDiagMatrix(m1-c1, -m2+c2)
+    lmi3 = LMI_PSD(m3)
+    coeffs = lmi_to_coeffs(lmi3, vars,
+                           split_blocks=True)
     for i in range(len(coeffs)):
         assert_array_equal(coeffs[i][0], expected[i][0])
         assert_array_equal(coeffs[i][1], expected[i][1])

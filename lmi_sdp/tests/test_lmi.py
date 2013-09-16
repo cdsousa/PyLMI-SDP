@@ -46,6 +46,16 @@ def test_LMI_canonical():
     assert isinstance(can, LMI_PD)
 
 
+def test_LMI_canonical_same():
+    m = Matrix([[x, y], [y, z+1]])
+
+    lmi = LMI_PSD(m)
+    assert lmi is lmi.canonical()
+
+    lmi = LMI_PD(m)
+    assert lmi is lmi.canonical()
+
+
 def test_LMI_expanded():
     variables = (x, y, z)
     m = Matrix([[x, y], [y, z+1]])
@@ -65,6 +75,13 @@ def test_LMI_PSD_exceptions():
     except NonSymmetricMatrixError:
         except_ok = True
     assert except_ok
+
+    noexcept_ok = True
+    try:
+        LMI_PSD(Matrix([[1, x], [y, z]]), assert_symmetry=False)
+    except NonSymmetricMatrixError:
+        noexcept_ok = False
+    assert noexcept_ok
 
     except_ok = False
     try:

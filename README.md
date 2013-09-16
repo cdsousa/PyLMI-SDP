@@ -8,7 +8,7 @@ It also includes tools to export LMIs to [CVXOPT](http://abel.ee.ucla.edu/cvxopt
 
 Depends on [SymPy](http://sympy.org) and [NumPy](http://www.numpy.org/), and optionally on [CVXOPT](http://cvxopt.org/).
 
-Supports/tested in Python 2.7 and Python 3.3 (single codebase).
+Single code base supporting (tested in) Python 2.7 and Python 3.3.
 
 [![Build Status](https://travis-ci.org/cdsousa/PyLMI-SDP.png?branch=master)](https://travis-ci.org/cdsousa/PyLMI-SDP)
 

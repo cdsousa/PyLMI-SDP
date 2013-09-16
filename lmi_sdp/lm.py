@@ -54,20 +54,19 @@ def lm_sym_to_coeffs(linear_matrix, variables):
         Matrix containing the constant terms (zero order coefficients).
     """
     lm = linear_matrix
-    dummy = Dummy()
 
-    ok_set = set(variables) | set([S.One, dummy])
     consts = np.zeros((lm.rows, lm.cols))
     coeffs = [np.zeros((lm.rows, lm.cols)) for i in range(len(variables))]
     for elem in [(i, j) for i in range(lm.rows) for j in range(lm.cols)]:
-        try:
-            coeffs_elem, consts[elem] = lin_expr_coeffs(lm[elem], variables)
-        except NonLinearExpressionError:
-            raise NonLinearMatrixError(
-                "'linear_matrix' must be composed of linear "
-                "expressions w.r.t. 'variables'")
-        for i in range(len(variables)):
-            coeffs[i][elem] = coeffs_elem[i]
+        if lm[elem] != 0:
+            try:
+                coeffs_elem, consts[elem] = lin_expr_coeffs(lm[elem], variables)
+            except NonLinearExpressionError:
+                raise NonLinearMatrixError(
+                    "'linear_matrix' must be composed of linear "
+                    "expressions w.r.t. 'variables'")
+            for i in range(len(variables)):
+                coeffs[i][elem] = coeffs_elem[i]
     return coeffs, consts
 
 
