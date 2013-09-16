@@ -4,7 +4,7 @@ python:
   - "3.3"
 before_install:
   - pip install sympy==0.7.3 --use-mirrors
-  - pip install numpy --use-mirrors
+  - pip install numpy==1.7.1 --use-mirrors
   - sudo apt-get install python-cvxopt
   - sudo apt-get build-dep python-cvxopt
   - pip install cvxopt --use-mirrors
