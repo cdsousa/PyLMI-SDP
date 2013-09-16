@@ -145,18 +145,17 @@ LMI = LMI_PSD  # default LMI type
 
 
 def _print_BaseLMI(self, expr):
-
     charmap = {
         ">": r"\succ",
         "<": r"\prec",
         ">=": r"\succeq",
         "<=": r"\preceq",
     }
-
     return "%s %s %s" % (self._print(expr.lhs),
                          charmap[expr.rel_op], self._print(expr.rhs))
 
 
 def init_lmi_latex_printing():
+    """ Monkey patch SymPy LatexPrinter to include a BaseLMI printer"""
     from sympy.printing.latex import LatexPrinter
     LatexPrinter._print_BaseLMI = _print_BaseLMI
