@@ -1,18 +1,32 @@
 from os.path import exists
 from setuptools import setup
 
+
+def read_file(name):
+    return open(name).read()
+
+
+description = ('Symbolic linear matrix inequalities (LMI) and semi-definite'
+               'programming (SDP) tools for Python')
+
+if exists('README.rst'):
+    long_description = read_file('README.rst')
+elif exists('README.md'):
+    long_description = read_file('README.md')
+else:
+    long_description = description
+
 setup(
     name='PyLMI-SDP',
     version='0.2-git',
     author='Cristovao D. Sousa',
     author_email='crisjss@gmail.com',
-    description=('Symbolic linear matrix inequalities (LMI) and semi-definite'
-                 'programming (SDP) tools for Python'),
+    description=description,
     license='BSD',
     keywords='LMI SDP',
     url='http://github.com/cdsousa/PyLMI-SDP',
     packages=['lmi_sdp'],
-    long_description=open('README.md').read() if exists('README.md') else '',
+    long_description=long_description,
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: BSD License',
