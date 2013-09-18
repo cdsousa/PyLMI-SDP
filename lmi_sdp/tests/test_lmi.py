@@ -69,26 +69,26 @@ def test_LMI_expanded():
 
 
 def test_LMI_PSD_exceptions():
-    except_ok = False
     try:
         LMI_PSD(Matrix([[1, x], [y, z]]))
     except NonSymmetricMatrixError:
-        except_ok = True
-    assert except_ok
+        assert True
+    else:
+        assert False
 
-    noexcept_ok = True
     try:
-        LMI_PSD(Matrix([[1, x], [y, z]]), assert_symmetry=False)
+        LMI_PSD(Matrix([[1, x], [y, z]]), assert_symmetry=1)
     except NonSymmetricMatrixError:
-        noexcept_ok = False
-    assert noexcept_ok
+        assert False
+    else:
+        assert True
 
-    except_ok = False
     try:
         LMI_PSD(Matrix([[x+y]]), Matrix([[x, y], [y, z+1]]))
     except ShapeError:
-        except_ok = True
-    assert except_ok
+        assert True
+    else:
+        assert False
 
 
 def test_lmi_latex_printing():

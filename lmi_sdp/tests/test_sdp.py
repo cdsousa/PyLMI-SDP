@@ -192,7 +192,7 @@ def test_to_sdpa_dense():
 
 try:
     import cvxopt
-except ImportError:
+except ImportError: # pragma: no cover
     pass
 else:
 
