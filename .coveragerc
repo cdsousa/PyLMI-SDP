@@ -1,0 +1,7 @@
+[run]
+branch = True
+source = lmi_sdp
+include = lmi_sdp/*
+omit = lmi_sdp/*/tests/*
+       lmi_sdp/tests/*
+       test_*.*
