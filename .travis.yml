@@ -12,6 +12,6 @@ before_install:
 install:
   - python setup.py install
 script:
-  - coverage run --source=PyLMI-SDP ./run_tests.sh
+  - ./run_tests.sh
 after_script:
   - coveralls --verbose
