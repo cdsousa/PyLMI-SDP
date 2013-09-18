@@ -14,4 +14,4 @@ install:
 script:
   - ./run_tests.sh
 after_script:
-  - coveralls --verbose
+  - coveralls
