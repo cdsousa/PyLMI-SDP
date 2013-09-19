@@ -10,8 +10,10 @@ Depends on [SymPy](http://sympy.org) 0.7.3 and [NumPy](http://www.numpy.org/) 1.
 Single codebase supporting both Python 2.7 and Python 3.3.
 PyLMI-SDP is tested in these versions but it may work in others.
 
-[![Build Status](https://travis-ci.org/cdsousa/PyLMI-SDP.png?branch=master)](https://travis-ci.org/cdsousa/PyLMI-SDP)
+PyLMI-SDP is at [GitHub](https://github.com/cdsousa/PyLMI-SDP)
 
+[![Build Status](https://travis-ci.org/cdsousa/PyLMI-SDP.png?branch=master)](https://travis-ci.org/cdsousa/PyLMI-SDP)
+[![Coverage Status](https://coveralls.io/repos/cdsousa/PyLMI-SDP/badge.png?branch=master)](https://coveralls.io/r/cdsousa/PyLMI-SDP?branch=master)
 
 LMI Definition
 --------------
