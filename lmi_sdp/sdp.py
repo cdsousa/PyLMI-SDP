@@ -1,10 +1,9 @@
 """Interfaces to SDP solvers"""
 
 
-from sympy import Basic, Dummy, S, ordered, sympify, BlockDiagMatrix
-from numpy import array
+from sympy import Basic, ordered, sympify, BlockDiagMatrix
 from .lm import lin_expr_coeffs, lm_sym_to_coeffs
-from .lmi import BaseLMI, LMI
+from .lmi import LMI
 
 
 class NotAvailableError(Exception):
@@ -14,14 +13,17 @@ class NotAvailableError(Exception):
         Exception.__init__(self, msg)
 
 try:
+    import scipy
+except ImportError:  # pragma: no cover
+    scipy = None
+
+try:
     import cvxopt
-except ImportError:
+except ImportError:  # pragma: no cover
     cvxopt = None
-else:
-    from cvxopt import matrix
 
 
-def lmi_to_coeffs(lmi, variables, split_blocks=False):
+def lmi_to_coeffs(lmi, variables, split_blocks=False, sparse=False):
     """Transforms LMIs from symbolic to numerical.
 
     Parameters
@@ -33,6 +35,8 @@ def lmi_to_coeffs(lmi, variables, split_blocks=False):
         smaller diagonal blocks. If set to 'BlockDiagMatrix',
         BlockDiagMatrix's are split into their diagonal blocks but the
         funtion does not try to subdivide them any further.
+    sparse: bool
+        Set whether return matrices dense or sparse. Dense by default.
 
     Returns
     -------
@@ -83,7 +87,7 @@ def lmi_to_coeffs(lmi, variables, split_blocks=False):
             else:
                 slms += slm.get_diag_blocks()
 
-    coeffs = [lm_sym_to_coeffs(slm, variables) for slm in slms]
+    coeffs = [lm_sym_to_coeffs(slm, variables, sparse) for slm in slms]
 
     return coeffs
 
@@ -169,17 +173,19 @@ def to_cvxopt(objective_func, lmis, variables, objective_type='minimize',
 
     obj_coeffs = objective_to_coeffs(objective_func, variables,
                                      objective_type)
-    lmi_coeffs = lmi_to_coeffs(lmis, variables, split_blocks)
+    lmi_coeffs = lmi_to_coeffs(lmis, variables, split_blocks, sparse=False)
 
-    c = matrix(obj_coeffs)
+    c = cvxopt.matrix(obj_coeffs)
 
     Gs = []
     hs = []
 
     for (LMis, LM0) in lmi_coeffs:
-        Gs.append(matrix([(-LMi).flatten().astype(float).tolist()
-                          for LMi in LMis]))
-        hs.append(matrix(LM0.astype(float).tolist()))
+        #Gs.append([-LMi for LMi in LMis])
+        #hs.append(LM0)
+        Gs.append(cvxopt.matrix([(-LMi).flatten().astype(float).tolist()
+                                 for LMi in LMis]))
+        hs.append(cvxopt.matrix(LM0.astype(float).tolist()))
 
     return c, Gs, hs
 
@@ -203,19 +209,31 @@ def to_sdpa_sparse(objective_func, lmis, variables, objective_type='minimize',
     """Put problem (objective and LMIs) into SDPA sparse format."""
     obj_coeffs = objective_to_coeffs(objective_func, variables,
                                      objective_type)
-    lmi_coeffs = lmi_to_coeffs(lmis, variables, split_blocks)
+    lmi_coeffs = lmi_to_coeffs(lmis, variables, split_blocks,
+                               sparse=(True if scipy else False))
 
     s = _sdpa_header(obj_coeffs, lmi_coeffs, comment)
 
-    def _print_sparse(x, b, m, sign=1):
-        s = ''
-        shape = m.shape
-        for i in range(shape[0]):
-            for j in range(i, shape[1]):
-                e = sign*m[i, j]
-                if e != 0:
+    if scipy:
+        def _print_sparse(x, b, m, sign=1):
+            s = ''
+            nzi, nzj = m.nonzero()
+            for idx, i in enumerate(nzi):
+                j = nzj[idx]
+                if j >= i:
+                    e = sign*m[i, j]
                     s += '%d %d %d %d %s\n' % (x, b, i+1, j+1, str(e))
-        return s
+            return s
+    else:
+        def _print_sparse(x, b, m, sign=1):
+            s = ''
+            shape = m.shape
+            for i in range(shape[0]):
+                for j in range(i, shape[1]):
+                    e = sign*m[i, j]
+                    if e != 0:
+                        s += '%d %d %d %d %s\n' % (x, b, i+1, j+1, str(e))
+            return s
 
     for b in range(len(lmi_coeffs)):
         s += _print_sparse(0, b+1, lmi_coeffs[b][1], sign=-1)
@@ -231,7 +249,7 @@ def to_sdpa_dense(objective_func, lmis, variables, objective_type='minimize',
     """Put SDP problem (objective and LMIs) into SDPA dense format."""
     obj_coeffs = objective_to_coeffs(objective_func, variables,
                                      objective_type)
-    lmi_coeffs = lmi_to_coeffs(lmis, variables, split_blocks)
+    lmi_coeffs = lmi_to_coeffs(lmis, variables, split_blocks, sparse=False)
 
     s = _sdpa_header(obj_coeffs, lmi_coeffs, comment)
 
