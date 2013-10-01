@@ -194,6 +194,7 @@ try:
     from cvxopt import matrix
 except ImportError:  # pragma: no cover
     pass
+else:
 
     def test_to_cvxopt():
         variables = symbols('x1 x2 x3')

@@ -14,12 +14,12 @@ class NotAvailableError(Exception):
 
 try:
     import scipy
-except ImportError:
+except ImportError:  # pragma: no cover
     scipy = None
 
 try:
     import cvxopt
-except ImportError:
+except ImportError:  # pragma: no cover
     cvxopt = None
 
 
