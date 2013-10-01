@@ -6,7 +6,7 @@ PyLMI-SDP
 This package includes a set of classes to represent and manipulate LMIs symbolically using [SymPy](http://sympy.org).
 It also includes tools to export LMIs to [CVXOPT](http://abel.ee.ucla.edu/cvxopt/userguide/coneprog.html#semidefinite-programming) SDP input and to the [SDPA](http://sdpa.sourceforge.net/) format.
 
-Depends on [SymPy](http://sympy.org) 0.7.3 and [NumPy](http://www.numpy.org/) 1.7.1, and optionally on [CVXOPT](http://cvxopt.org/).
+Depends on [SymPy](http://sympy.org) 0.7.3 and on [NumPy](http://www.numpy.org/) 1.7.1; and optionally on [CVXOPT](http://cvxopt.org/) and on [SciPy](http://www.scipy.org/) (for sparse matrices).
 Single codebase supporting both Python 2.7 and Python 3.3.
 PyLMI-SDP is tested in these versions but it may work in others.
 
