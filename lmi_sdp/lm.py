@@ -1,7 +1,19 @@
 """Tools for symbolic and numerical representations of linear matrices"""
-from sympy import ImmutableMatrix, S, diag, Dummy, MatMul, MatAdd, S
-from sympy.matrices.matrices import MatrixError, NonSquareMatrixError
-import numpy as np
+from sympy import ImmutableMatrix, S, Dummy, MatMul, MatAdd
+from sympy.matrices.matrices import MatrixError
+from numpy import zeros
+
+try:
+    import scipy
+except ImportError:
+    scipy = None
+else:
+    import scipy.sparse
+
+try:
+    import cvxopt
+except ImportError:
+    cvxopt = None
 
 
 class NonLinearExpressionError(ValueError):
@@ -40,9 +52,19 @@ def lin_expr_coeffs(linear_expr, variables):
     return coeffs, const
 
 
-def lm_sym_to_coeffs(linear_matrix, variables):
+def lm_sym_to_coeffs(linear_matrix, variables, sparse=False):
     """Convert a symbolic matrix linear w.r.t. variables into a list of
     numerical coefficient matrices
+
+    Parameters
+    ----------
+    linear_matrix: symbolic linear matrix
+    variables: list of symbols
+    sparse: bool or string
+        Set whether return matrices are sparse or dense. If set to False,
+        (the default) numpy.matrix dense matrices are used. If set to True,
+        scipy.sparse.lil_matrix sparse matrices are used. If set to 'cvxopt',
+        cvxopt.sparse.spmatrix sparse matrices are used.
 
     Returns
     -------
@@ -53,14 +75,26 @@ def lm_sym_to_coeffs(linear_matrix, variables):
     consts: numpy matrix
         Matrix containing the constant terms (zero order coefficients).
     """
+
     lm = linear_matrix
 
-    consts = np.zeros((lm.rows, lm.cols))
-    coeffs = [np.zeros((lm.rows, lm.cols)) for i in range(len(variables))]
+    if scipy and sparse is True:
+        consts = scipy.sparse.lil_matrix((lm.rows, lm.cols))
+        coeffs = [scipy.sparse.lil_matrix((lm.rows, lm.cols))
+                  for i in range(len(variables))]
+    elif cvxopt and sparse == 'cvxopt':
+        consts = cvxopt.spmatrix([], [], [], (lm.rows, lm.cols))
+        coeffs = [cvxopt.spmatrix([], [], [], (lm.rows, lm.cols))
+                  for i in range(len(variables))]
+    else:
+        consts = zeros((lm.rows, lm.cols))
+        coeffs = [zeros((lm.rows, lm.cols)) for i in range(len(variables))]
+
     for elem in [(i, j) for i in range(lm.rows) for j in range(lm.cols)]:
         if lm[elem] != 0:
             try:
-                coeffs_elem, consts[elem] = lin_expr_coeffs(lm[elem], variables)
+                coeffs_elem, consts[elem] = lin_expr_coeffs(lm[elem],
+                                                            variables)
             except NonLinearExpressionError:
                 raise NonLinearMatrixError(
                     "'linear_matrix' must be composed of linear "

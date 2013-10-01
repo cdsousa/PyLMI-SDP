@@ -191,12 +191,9 @@ def test_to_sdpa_dense():
     assert ok_dat == dat
 
 try:
-    import cvxopt
-except ImportError: # pragma: no cover
-    pass
-else:
-
     from cvxopt import matrix
+except ImportError:  # pragma: no cover
+    pass
 
     def test_to_cvxopt():
         variables = symbols('x1 x2 x3')

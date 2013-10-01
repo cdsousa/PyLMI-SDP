@@ -1,9 +1,8 @@
-from sympy import Matrix, factor, zeros, MatAdd, MatMul
+from sympy import Matrix, zeros, MatAdd, MatMul
 from sympy.abc import x, y, z
 import numpy as np
-from lmi_sdp import NonLinearExpressionError, NonSquareMatrixError, \
-    NonLinearMatrixError, lin_expr_coeffs, lm_sym_to_coeffs, \
-    lm_coeffs_to_sym, lm_sym_expanded
+from lmi_sdp import NonLinearExpressionError, NonLinearMatrixError, \
+    lin_expr_coeffs, lm_sym_to_coeffs, lm_coeffs_to_sym, lm_sym_expanded
 
 
 def test_lin_expr_coeffs():
@@ -42,6 +41,20 @@ def test_lm_sym_to_coeffs():
     assert lm_sym_to_coeffs(Matrix([0.0]), [x, y, z]) == \
         ([np.matrix([[0.0]]), np.matrix([[0.0]]), np.matrix([[0.0]])],
          np.matrix([[0.0]]))
+
+
+def test_lm_sym_to_coeffs_sparse():
+    m = Matrix([[1.2, x], [3.4*y, 1.2 + 3*x - 4.5*y + z]])
+    coeffs = lm_sym_to_coeffs(m, [x, y, z], sparse=True)
+    assert len(coeffs) == 2
+    assert len(coeffs[0]) == 3
+    assert (coeffs[0][0].toarray() ==
+            np.matrix([[0.0, 1.0], [0.0, 3.0]])).all()
+    assert (coeffs[0][1].toarray() ==
+            np.matrix([[0.0, 0.0], [3.4, -4.5]])).all()
+    assert (coeffs[0][2].toarray() ==
+            np.matrix([[0.0, 0.0], [0.0, 1.0]])).all()
+    assert (coeffs[1].toarray() == np.matrix([[1.2, 0.0], [0.0, 1.2]])).all()
 
 
 def test_lm_sym_to_coeffs_exceptions():
