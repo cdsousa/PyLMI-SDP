@@ -214,7 +214,7 @@ Install
 
 From git source:
 
-    git clone git@github.com:cdsousa/PyLMI-SDP.git
+    git clone https://github.com/cdsousa/PyLMI-SDP.git
     cd PyLMI-SDP
     python setup.py install
 
