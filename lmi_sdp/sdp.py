@@ -135,9 +135,11 @@ def objective_to_coeffs(objective_func, variables,
     return coeffs
 
 
-def get_variables(objective_func=0, lmis=[]):
+def get_variables(objective_func=0, lmis=None):
     """Extract free variables from objective_func and lmis.
     """
+    if lmis is None:
+        lmis = []
     variables = sympify(objective_func).free_symbols
     for lmi in lmis:
         if lmi.is_Matrix:
