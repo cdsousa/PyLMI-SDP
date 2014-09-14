@@ -18,7 +18,7 @@ else:
 
 setup(
     name='PyLMI-SDP',
-    version='1.0',
+    version='1.0-dev',
     author='Cristovao D. Sousa',
     author_email='crisjss@gmail.com',
     description=description,
