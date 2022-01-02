@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+
+jobs:
+  # This is the "main" test suite which tests a large number of different
+  # versions of default compilers and Python versions in GitHub Actions.
+  standard:
+    strategy:
+      fail-fast: false
+      matrix:
+        python:
+        - 3.6
+        - 3.8
+
+        sympy:
+        - 0.7.4
+        - 0.7.6
+        - ''
+
+        include:
+        - python: 2.7
+          sympy: 0.7.3
+
+    name: >
+      🐍 ${{ matrix.python }}
+      • sympy ${{ matrix.sympy || 'latest'}}
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Python ${{ matrix.python }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python }}
+
+    - name: Install sympy
+      run: pip install sympy${{ matrix.sympy && '=='}}${{ matrix.sympy }}
+
+
+    - name: Install cvxopt
+      run: |
+        sudo apt-get install libblas-dev liblapack-dev libglpk-dev libfftw3-dev libgsl-dev libdsdp-dev # texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-plain-generic
+        pip install cvxopt
+
+    - run: python setup.py install
+
+    - name: Run pytest
+      run: |
+        pip install numpy
+        pip install pytest
+        pytest
