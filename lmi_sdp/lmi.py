@@ -1,11 +1,14 @@
 """LMI representation and tools"""
 
+import sympy
 from sympy import sympify, GreaterThan, StrictGreaterThan, LessThan, \
     StrictLessThan, MatrixExpr, block_collapse
 
 from sympy.matrices.matrices import MatrixError, ShapeError
 
 from .lm import lm_sym_expanded
+
+from packaging import version
 
 
 class NonSymmetricMatrixError(ValueError, MatrixError):
@@ -17,6 +20,8 @@ class BaseLMI(object):
 
     BaseLMI is used so that LMI_* classes can share functions.
     """
+    _options = dict(evaluate=False) if version.parse(sympy.__version__) >= version.parse("0.7.6") else dict()
+
     def __new__(cls, lhs, rhs, rel_cls, assert_symmetry=True):
         lhs = sympify(lhs)
         rhs = sympify(rhs)
@@ -35,7 +40,7 @@ class BaseLMI(object):
             raise ValueError('LMI sides must be two matrices '
                              'or a matrix and a zero')
 
-        return rel_cls.__new__(cls, lhs, rhs, evaluate=False)
+        return rel_cls.__new__(cls, lhs, rhs, **BaseLMI._options)
 
     def canonical(self):
         """Returns the LMI positive (semi-)definite form with the matrix at
