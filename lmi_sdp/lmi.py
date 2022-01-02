@@ -35,7 +35,7 @@ class BaseLMI(object):
             raise ValueError('LMI sides must be two matrices '
                              'or a matrix and a zero')
 
-        return rel_cls.__new__(cls, lhs, rhs)
+        return rel_cls.__new__(cls, lhs, rhs, evaluate=False)
 
     def canonical(self):
         """Returns the LMI positive (semi-)definite form with the matrix at
