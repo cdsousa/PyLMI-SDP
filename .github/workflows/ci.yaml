@@ -17,9 +17,10 @@ jobs:
         - 3.8
 
         sympy:
-        - 0.7.4
-        - 0.7.6
-        - ''
+        - 0.7.4  # old API
+        - 0.7.6  # new API with evaluate arg
+        - 1.5.1  # Ubuntu 20.04
+        - ''     # latest
 
         include:
         - python: 2.7
@@ -47,10 +48,10 @@ jobs:
         sudo apt-get install libblas-dev liblapack-dev libglpk-dev libfftw3-dev libgsl-dev libdsdp-dev # texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-plain-generic
         pip install cvxopt
 
-    - run: python setup.py install
+    - run: pip install -e .
 
     - name: Run pytest
       run: |
         pip install numpy
-        pip install pytest
-        pytest
+        pip install pytest pytest-cov
+        pytest -v --doctest-glob="*.md" --cov=lmi_sdp
