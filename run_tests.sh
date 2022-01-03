@@ -1,2 +1,2 @@
 #!/bin/sh
-nosetests --with-doctest --doctest-extension=md --with-coverage --cover-package=lmi_sdp $@
+pytest --doctest-glob="*.md" --cov=lmi_sdp "$@"
