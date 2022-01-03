@@ -54,4 +54,5 @@ jobs:
       run: |
         pip install numpy
         pip install pytest pytest-cov
-        pytest -v --doctest-glob="*.md" --cov=lmi_sdp
+        # Some sympy version yield a different formatting of float numbers in the doctest: disable doctest for those
+        pytest -v ${{ !contains('0.7.3 1.9', matrix.sympy) && '--doctest-glob="*.md"' || '' }} --cov=lmi_sdp
