@@ -38,17 +38,17 @@ Matrix([
 >>> from sympy import latex
 >>> init_lmi_latex_printing()
 >>> print(latex(lmi))
-\left[\begin{smallmatrix}{}x + 1 & y + 2\\y + 2 & x + z\end{smallmatrix}\right] \succ 0
+\left[\begin{matrix}x + 1 & y + 2\\y + 2 & x + z\end{matrix}\right] \succ 0
 
 ```
-![lmi](http://latex.codecogs.com/gif.latex?%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7Dx%2B1%26y%2B2%5C%5Cy%2B2%26x%2Bz%5Cend%7Bsmallmatrix%7D%5Cright%5D%5Csucc0)
+![lmi](http://latex.codecogs.com/gif.latex?%5Cleft%5B%5Cbegin%7Bmatrix%7D%7B%7Dx%2B1%26y%2B2%5C%5Cy%2B2%26x%2Bz%5Cend%7Bmatrix%7D%5Cright%5D%5Csucc0)
 
 ```Python
 >>> print(latex(lmi.expanded(variables)))
-\left[\begin{smallmatrix}{}1.0 & 0.0\\0.0 & 1.0\end{smallmatrix}\right] x + \left[\begin{smallmatrix}{}0.0 & 1.0\\1.0 & 0.0\end{smallmatrix}\right] y + \left[\begin{smallmatrix}{}0.0 & 0.0\\0.0 & 1.0\end{smallmatrix}\right] z + \left[\begin{smallmatrix}{}1.0 & 2.0\\2.0 & 0.0\end{smallmatrix}\right] \succ 0
+\left[\begin{matrix}1.0 & 0.0\\0.0 & 1.0\end{matrix}\right] x + \left[\begin{matrix}0.0 & 1.0\\1.0 & 0.0\end{matrix}\right] y + \left[\begin{matrix}0.0 & 0.0\\0.0 & 1.0\end{matrix}\right] z + \left[\begin{matrix}1.0 & 2.0\\2.0 & 0.0\end{matrix}\right] \succ 0
 
 ```
-![lmi.expanded(variables)](http://latex.codecogs.com/gif.latex?%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D1.0%260.0%5C%5C0.0%261.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dx%2B%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D0.0%261.0%5C%5C1.0%260.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dy%2B%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D0.0%260.0%5C%5C0.0%261.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dz%2B%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D1.0%262.0%5C%5C2.0%260.0%5Cend%7Bsmallmatrix%7D%5Cright%5D%5Csucc0)
+![lmi.expanded(variables)](http://latex.codecogs.com/gif.latex?%5Cleft%5B%5Cbegin%7Bmatrix%7D%7B%7D1.0%260.0%5C%5C0.0%261.0%5Cend%7Bmatrix%7D%5Cright%5Dx%2B%5Cleft%5B%5Cbegin%7Bmatrix%7D%7B%7D0.0%261.0%5C%5C1.0%260.0%5Cend%7Bmatrix%7D%5Cright%5Dy%2B%5Cleft%5B%5Cbegin%7Bmatrix%7D%7B%7D0.0%260.0%5C%5C0.0%261.0%5Cend%7Bmatrix%7D%5Cright%5Dz%2B%5Cleft%5B%5Cbegin%7Bmatrix%7D%7B%7D1.0%262.0%5C%5C2.0%260.0%5Cend%7Bmatrix%7D%5Cright%5D%5Csucc0)
 
 ```Python
 >>> lmi_2 = LMI_NSD( Matrix([[-x, -y], [-y, -z-x]]), Matrix([[1, 2], [2, 0]]))
@@ -67,10 +67,10 @@ Matrix([
 
 ```Python
 >>> print(latex(lmi_2))
-\left[\begin{smallmatrix}{}- x & - y\\- y & - x - z\end{smallmatrix}\right] \preceq \left[\begin{smallmatrix}{}1 & 2\\2 & 0\end{smallmatrix}\right]
+\left[\begin{matrix}- x & - y\\- y & - x - z\end{matrix}\right] \preceq \left[\begin{matrix}1 & 2\\2 & 0\end{matrix}\right]
 
 ```
-![lmi_2](http://latex.codecogs.com/gif.latex?%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D-x%26-y%5C%5C-y%26-x-z%5Cend%7Bsmallmatrix%7D%5Cright%5D%5Cpreceq%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D1%262%5C%5C2%260%5Cend%7Bsmallmatrix%7D%5Cright%5D)
+![lmi_2](http://latex.codecogs.com/gif.latex?%5Cleft%5B%5Cbegin%7Bmatrix%7D%7B%7D-x%26-y%5C%5C-y%26-x-z%5Cend%7Bmatrix%7D%5Cright%5D%5Cpreceq%5Cleft%5B%5Cbegin%7Bmatrix%7D%7B%7D1%262%5C%5C2%260%5Cend%7Bmatrix%7D%5Cright%5D)
 
 Convertion to CVXOPT SDP
 ------------------------
@@ -121,7 +121,7 @@ Matrix([
 [-9, 26]])
 
 ```
-![LMI_1.expanded(variables)](http://latex.codecogs.com/gif.latex?%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D-7.0%26-11.0%5C%5C-11.0%263.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dx_%7B1%7D%2B%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D7.0%26-18.0%5C%5C-18.0%268.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dx_%7B2%7D%2B%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D-2.0%26-8.0%5C%5C-8.0%261.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dx_%7B3%7D%5Cpreceq%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D33%26-9%5C%5C-9%2626%5Cend%7Bsmallmatrix%7D%5Cright%5D)
+![LMI_1.expanded(variables)](http://latex.codecogs.com/gif.latex?%5Cleft%5B%5Cbegin%7Bmatrix%7D%7B%7D-7.0%26-11.0%5C%5C-11.0%263.0%5Cend%7Bmatrix%7D%5Cright%5Dx_%7B1%7D%2B%5Cleft%5B%5Cbegin%7Bmatrix%7D%7B%7D7.0%26-18.0%5C%5C-18.0%268.0%5Cend%7Bmatrix%7D%5Cright%5Dx_%7B2%7D%2B%5Cleft%5B%5Cbegin%7Bmatrix%7D%7B%7D-2.0%26-8.0%5C%5C-8.0%261.0%5Cend%7Bmatrix%7D%5Cright%5Dx_%7B3%7D%5Cpreceq%5Cleft%5B%5Cbegin%7Bmatrix%7D%7B%7D33%26-9%5C%5C-9%2626%5Cend%7Bmatrix%7D%5Cright%5D)
 
 ```Python
 >>> LMI_2.expanded(variables)
@@ -140,7 +140,7 @@ Matrix([
 [40, 10, 15]])
 
 ```
-![LMI_2.expanded(variables)](http://latex.codecogs.com/gif.latex?%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D-21.0%26-11.0%260.0%5C%5C-11.0%2610.0%268.0%5C%5C0.0%268.0%265.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dx_%7B1%7D%2B%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D0.0%2610.0%2616.0%5C%5C10.0%26-10.0%26-10.0%5C%5C16.0%26-10.0%263.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dx_%7B2%7D%2B%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D-5.0%262.0%26-17.0%5C%5C2.0%26-6.0%268.0%5C%5C-17.0%268.0%266.0%5Cend%7Bsmallmatrix%7D%5Cright%5Dx_%7B3%7D%5Cpreceq%5Cleft%5B%5Cbegin%7Bsmallmatrix%7D%7B%7D14%269%2640%5C%5C9%2691%2610%5C%5C40%2610%2615%5Cend%7Bsmallmatrix%7D%5Cright%5D)
+![LMI_2.expanded(variables)](http://latex.codecogs.com/gif.latex?%5Cleft%5B%5Cbegin%7Bmatrix%7D%7B%7D-21.0%26-11.0%260.0%5C%5C-11.0%2610.0%268.0%5C%5C0.0%268.0%265.0%5Cend%7Bmatrix%7D%5Cright%5Dx_%7B1%7D%2B%5Cleft%5B%5Cbegin%7Bmatrix%7D%7B%7D0.0%2610.0%2616.0%5C%5C10.0%26-10.0%26-10.0%5C%5C16.0%26-10.0%263.0%5Cend%7Bmatrix%7D%5Cright%5Dx_%7B2%7D%2B%5Cleft%5B%5Cbegin%7Bmatrix%7D%7B%7D-5.0%262.0%26-17.0%5C%5C2.0%26-6.0%268.0%5C%5C-17.0%268.0%266.0%5Cend%7Bmatrix%7D%5Cright%5Dx_%7B3%7D%5Cpreceq%5Cleft%5B%5Cbegin%7Bmatrix%7D%7B%7D14%269%2640%5C%5C9%2691%2610%5C%5C40%2610%2615%5Cend%7Bmatrix%7D%5Cright%5D)
 
 ```Python
 >>> from cvxopt import solvers

@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+
+jobs:
+  # This is the "main" test suite which tests a large number of different
+  # versions of default compilers and Python versions in GitHub Actions.
+  standard:
+    strategy:
+      fail-fast: false
+      matrix:
+        python:
+        - 3.6
+        - 3.8
+
+        sympy:
+        - 0.7.4  # old API
+        - 0.7.6  # new API with evaluate arg
+        - 1.5.1  # Ubuntu 20.04
+        - ''     # latest
+
+        include:
+        - python: 2.7
+          sympy: 0.7.3
+
+    name: >
+      🐍 ${{ matrix.python }}
+      • sympy ${{ matrix.sympy || 'latest'}}
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Python ${{ matrix.python }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python }}
+
+    - name: Install sympy
+      run: pip install sympy${{ matrix.sympy && '=='}}${{ matrix.sympy }}
+
+    - name: Install cvxopt
+      run: |
+        sudo apt-get install libblas-dev liblapack-dev libglpk-dev libfftw3-dev libgsl-dev libdsdp-dev # texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-plain-generic
+        pip install cvxopt
+
+    - run: pip install -e .
+
+    - name: Install test dependencies
+      run: |
+        pip install numpy
+        pip install pytest pytest-cov
+        python -c "import sympy; print('sympy:', sympy.__version__)"
+        python -c "import numpy; print('numpy:', numpy.__version__)"
+
+    - name: Run pytest
+      # Some sympy version yield a different formatting of float numbers in the doctest: disable doctest for those
+      run: pytest -v ${{ !contains('0.7.3 1.9', matrix.sympy) && '--doctest-glob="*.md"' || '' }} --cov=lmi_sdp
