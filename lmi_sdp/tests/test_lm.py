@@ -33,14 +33,14 @@ def test_lm_sym_to_coeffs():
     coeffs = lm_sym_to_coeffs(m, [x, y, z])
     assert len(coeffs) == 2
     assert len(coeffs[0]) == 3
-    assert (coeffs[0][0] == np.matrix([[0.0, 1.0], [0.0, 3.0]])).all()
-    assert (coeffs[0][1] == np.matrix([[0.0, 0.0], [3.4, -4.5]])).all()
-    assert (coeffs[0][2] == np.matrix([[0.0, 0.0], [0.0, 1.0]])).all()
-    assert (coeffs[1] == np.matrix([[1.2, 0.0], [0.0, 1.2]])).all()
+    assert (coeffs[0][0] == np.array([[0.0, 1.0], [0.0, 3.0]])).all()
+    assert (coeffs[0][1] == np.array([[0.0, 0.0], [3.4, -4.5]])).all()
+    assert (coeffs[0][2] == np.array([[0.0, 0.0], [0.0, 1.0]])).all()
+    assert (coeffs[1] == np.array([[1.2, 0.0], [0.0, 1.2]])).all()
 
     assert lm_sym_to_coeffs(Matrix([0.0]), [x, y, z]) == \
-        ([np.matrix([[0.0]]), np.matrix([[0.0]]), np.matrix([[0.0]])],
-         np.matrix([[0.0]]))
+        ([np.array([[0.0]]), np.array([[0.0]]), np.array([[0.0]])],
+         np.array([[0.0]]))
 
 try:
     import scipy
@@ -54,12 +54,12 @@ else:
         assert len(coeffs) == 2
         assert len(coeffs[0]) == 3
         assert (coeffs[0][0].toarray() ==
-                np.matrix([[0.0, 1.0], [0.0, 3.0]])).all()
+                np.array([[0.0, 1.0], [0.0, 3.0]])).all()
         assert (coeffs[0][1].toarray() ==
-                np.matrix([[0.0, 0.0], [3.4, -4.5]])).all()
+                np.array([[0.0, 0.0], [3.4, -4.5]])).all()
         assert (coeffs[0][2].toarray() ==
-                np.matrix([[0.0, 0.0], [0.0, 1.0]])).all()
-        assert (coeffs[1].toarray() == np.matrix([[1.2, 0.0], [0.0, 1.2]])).all()
+                np.array([[0.0, 0.0], [0.0, 1.0]])).all()
+        assert (coeffs[1].toarray() == np.array([[1.2, 0.0], [0.0, 1.2]])).all()
 
 
 def test_lm_sym_to_coeffs_exceptions():
@@ -80,10 +80,10 @@ def test_lm_sym_to_coeffs_exceptions():
 
 def test_lm_coeffs_to_sym():
     var_coeffs = [None]*3
-    var_coeffs[0] = np.matrix([[0.0, 1.0], [0.0, 3.0]])
-    var_coeffs[1] = np.matrix([[0.0, 0.0], [3.4, -4.5]])
-    var_coeffs[2] = np.matrix([[0.0, 0.0], [0.0, 1.0]])
-    consts = np.matrix([[1.2, 0.0], [0.0, 1.2]])
+    var_coeffs[0] = np.array([[0.0, 1.0], [0.0, 3.0]])
+    var_coeffs[1] = np.array([[0.0, 0.0], [3.4, -4.5]])
+    var_coeffs[2] = np.array([[0.0, 0.0], [0.0, 1.0]])
+    consts = np.array([[1.2, 0.0], [0.0, 1.2]])
     coeffs = (var_coeffs, consts)
     m = Matrix([[1.2, x], [3.4*y, 1.2 + 3*x - 4.5*y + z]])
     assert lm_coeffs_to_sym(coeffs, [x, y, z]) - m == zeros(2)
