@@ -6,13 +6,13 @@ PyLMI-SDP
 This package includes a set of classes to represent and manipulate LMIs symbolically using [SymPy](http://sympy.org).
 It also includes tools to export LMIs to [CVXOPT](http://abel.ee.ucla.edu/cvxopt/userguide/coneprog.html#semidefinite-programming) SDP input and to the [SDPA](http://sdpa.sourceforge.net/) format.
 
-Depends on [SymPy](http://sympy.org) 0.7.3 and on [NumPy](http://www.numpy.org/) 1.7.1; and optionally on [CVXOPT](http://cvxopt.org/) and on [SciPy](http://www.scipy.org/) (for sparse matrices).
-Single codebase supporting both Python 2.7 and Python 3.3.
-PyLMI-SDP is tested in these versions but it may work in others.
+Depends on [SymPy](http://sympy.org) and [NumPy](http://www.numpy.org/); and optionally on [CVXOPT](http://cvxopt.org) and on [SciPy](http://www.scipy.org) (for sparse matrices).
+Single codebase supporting both Python 2.7 and Python 3.x.
+PyLMI-SDP is tested for various combinations of Python and sympy. See [here](https://github.com/cdsousa/PyLMI-SDP/actions/workflows/ci.yaml).
 
-PyLMI-SDP is at [GitHub](https://github.com/cdsousa/PyLMI-SDP)
+PyLMI-SDP is at [GitHub](https://github.com/cdsousa/PyLMI-SDP).
 
-[![Build Status](https://travis-ci.org/cdsousa/PyLMI-SDP.png?branch=master)](https://travis-ci.org/cdsousa/PyLMI-SDP)
+[![Build Status](https://github.com/cdsousa/PyLMI-SDP/actions/workflows/ci.yaml/badge.svg?branch=master)](https://github.com/cdsousa/PyLMI-SDP/actions/workflows/ci.yaml)
 [![Coverage Status](https://coveralls.io/repos/cdsousa/PyLMI-SDP/badge.png?branch=master)](https://coveralls.io/r/cdsousa/PyLMI-SDP?branch=master)
 
 LMI Definition
@@ -211,6 +211,10 @@ Author
 
 Install
 -------
+
+From PyPi:
+
+    pip install PyLMI-SDP
 
 From git source:
 
