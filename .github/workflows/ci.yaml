@@ -22,20 +22,16 @@ jobs:
         - 1.5.1  # Ubuntu 20.04
         - ''     # latest
 
-        include:
-        - python: 2.7
-          sympy: 0.7.3
-
     name: >
       🐍 ${{ matrix.python }}
       • sympy ${{ matrix.sympy || 'latest'}}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Setup Python ${{ matrix.python }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python }}
 
